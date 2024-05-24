@@ -6,7 +6,7 @@ export const notFoundErrorHandler = (
   _res: Response,
   next: NextFunction,
 ) => {
-  const err: TCustomError = new Error("Page not found");
+  const err: TCustomError = new Error("Route not found");
   err.success = false;
   err.status = 404;
   next(err);

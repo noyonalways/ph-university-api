@@ -1,7 +1,6 @@
 import { Request, Response, Router } from "express";
-import studentRoutes from "../modules/student/student.routes";
-import userRoutes from "../modules/user/user.routes";
 import { globalErrorHandler, notFoundErrorHandler } from "./error.handler";
+import allRoutes from "../routes/index";
 const router: Router = Router();
 
 router.get("/", (_req: Request, res: Response) => {
@@ -15,8 +14,7 @@ router.get("/health", (_req: Request, res: Response) => {
 });
 
 // main routes
-router.use("/api/v1/students", studentRoutes);
-router.use("/api/v1/users", userRoutes);
+router.use("/api/v1", allRoutes);
 
 // not found error handler
 router.use(notFoundErrorHandler);
