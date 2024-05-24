@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response, Router } from "express";
+import { Request, Response, Router } from "express";
 import studentRoutes from "../modules/student/student.routes";
 import userRoutes from "../modules/user/user.routes";
-import { TCustomError } from "../types";
+import { globalErrorHandler, notFoundErrorHandler } from "./error.handler";
 const router: Router = Router();
 
 router.get("/", (_req: Request, res: Response) => {
@@ -18,24 +18,10 @@ router.get("/health", (_req: Request, res: Response) => {
 router.use("/api/v1/students", studentRoutes);
 router.use("/api/v1/users", userRoutes);
 
-router.use((_req: Request, _res: Response, next: NextFunction) => {
-  const err: TCustomError = new Error("Page not found");
-  err.status = 404;
-  next(err);
-});
+// not found error handler
+router.use(notFoundErrorHandler);
 
-router.use(
-  (
-    error: TCustomError,
-    _req: Request,
-    res: Response,
-    _next: NextFunction,
-  ): void => {
-    res.status(error.status || 500).json({
-      status: false,
-      message: error.message || "something went wrong",
-    });
-  },
-);
+// global error handler
+router.use(globalErrorHandler);
 
 export default router;

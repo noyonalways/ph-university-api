@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IUser } from "./user.interface";
+import bcrypt from "bcrypt";
+import config from "../../config";
 
 const userSchema = new Schema<IUser>(
   {
@@ -9,7 +11,7 @@ const userSchema = new Schema<IUser>(
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "password is required"],
     },
     needsPasswordChange: {
       type: Boolean,
@@ -39,6 +41,18 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
   },
 );
+
+// mongoose pre middleware for hashing the password
+userSchema.pre("save", async function (next) {
+  this.password = await bcrypt.hash(this.password, Number(config.salt_rounds));
+  next();
+});
+
+// remove the password from the saved response
+userSchema.post("save", function (doc, next) {
+  doc.password = "";
+  next();
+});
 
 const User = model<IUser>("User", userSchema);
 export default User;
