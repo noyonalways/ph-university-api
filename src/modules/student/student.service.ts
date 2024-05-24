@@ -1,23 +1,5 @@
-import { customError } from "../../utils";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
-
-const create = async (data: IStudent) => {
-  if (await Student.isUserExists(data.email)) {
-    throw customError(400, "Email already exists");
-  }
-
-  const result = Student.create(data); // built-in static method
-  return result;
-
-  // const student = new Student({ ...data });
-
-  // mongoose custom instance method
-  // if (await student.isUserExists(data.email))
-  //   throw customError(400, "Email already exists");
-
-  // return student.save(); // built-in instance method
-};
 
 const getAll = () => {
   return Student.find({}).select("-password");
@@ -34,8 +16,8 @@ const findByProperty = (
   }
 };
 
-const deleteSingle = (studentId: string) => {
-  return Student.updateOne({ studentId }, { isDeleted: true });
+const deleteSingle = (id: string) => {
+  return Student.updateOne({ id }, { isDeleted: true });
 };
 
-export default { create, getAll, findByProperty, deleteSingle };
+export default { getAll, findByProperty, deleteSingle };

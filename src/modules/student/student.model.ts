@@ -85,10 +85,15 @@ const localGuardianSchema = new Schema<ILocalGuardian>({
 
 const studentSchema = new Schema<IStudent, IStudentModel>(
   {
-    studentId: {
+    id: {
       type: String,
       required: true,
       unique: true,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, "user id is required"],
+      ref: "User",
     },
     password: {
       type: String,
@@ -141,11 +146,6 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
     },
     profileImage: {
       type: String,
-    },
-    isActive: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
     },
     isDeleted: {
       type: Boolean,

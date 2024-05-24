@@ -3,13 +3,10 @@ import studentController from "./student.controller";
 
 const router: Router = Router();
 
-router
-  .route("/students")
-  .post(studentController.create)
-  .get(studentController.getAll);
+router.route("/").get(studentController.getAll);
 
 router
-  .route("/students/:studentId")
+  .route("/:id")
   .get(studentController.getSingle)
   .delete(studentController.deleteSingle);
 

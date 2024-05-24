@@ -1,27 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import studentService from "./student.service";
 import { IStudent } from "./student.interface";
-import studentSchema from "./student.validate";
-
-const create = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { data, error } = studentSchema.safeParse(req.body);
-    if (error) {
-      return res.status(400).json({
-        status: false,
-        message: error.issues[0].message,
-      });
-    }
-    const result: IStudent = await studentService.create({ ...data });
-    return res.status(201).json({
-      status: true,
-      message: "Student created successfully",
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 const getAll = async (_req: Request, res: Response, next: NextFunction) => {
   try {
@@ -38,11 +17,11 @@ const getAll = async (_req: Request, res: Response, next: NextFunction) => {
 };
 
 const getSingle = async (req: Request, res: Response, next: NextFunction) => {
-  const { studentId } = req.params;
+  const { id } = req.params;
   try {
     const student: IStudent | null = await studentService.findByProperty(
-      "studentId",
-      studentId,
+      "id",
+      id,
     );
 
     if (!student) {
@@ -68,10 +47,10 @@ const deleteSingle = async (
   next: NextFunction,
 ) => {
   try {
-    const { studentId } = req.params;
+    const { id } = req.params;
     const student: IStudent | null = await studentService.findByProperty(
-      "studentId",
-      studentId,
+      "id",
+      id,
     );
 
     if (!student) {
@@ -81,7 +60,7 @@ const deleteSingle = async (
       });
     }
 
-    const result = await studentService.deleteSingle(studentId);
+    const result = await studentService.deleteSingle(id);
     return res.status(202).json({
       status: true,
       message: "Student deleted successfully",
@@ -92,4 +71,4 @@ const deleteSingle = async (
   }
 };
 
-export default { create, getAll, getSingle, deleteSingle };
+export default { getAll, getSingle, deleteSingle };

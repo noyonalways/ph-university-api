@@ -52,7 +52,7 @@ const localGuardianSchema = z.object({
 // Define the Zod schema for IStudent
 const studentSchema = z.object(
   {
-    studentId: z.string(),
+    id: z.string(),
     name: userNameSchema,
     password: z
       .string({ message: "password is required" })
