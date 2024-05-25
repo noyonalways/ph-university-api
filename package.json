@@ -8,8 +8,8 @@
     "start": "tsc && node ./dist/server.js",
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
-    "format": "prettier ./src --write \"./.+(js|ts|json)\"",
-    "format:check": "prettier ./src --check",
+    "format": "prettier --write \"./src/**/*.+(js|ts|json)\"",
+    "format:check": "prettier --check \"./src/**/*.+(js|ts|json)\"",
     "build": "tsc"
   },
   "keywords": [],
