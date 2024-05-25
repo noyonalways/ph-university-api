@@ -5,9 +5,5 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
-  "cSpell.words": [
-    "Noyon",
-    "Rahman",
-    "tseslint"
-  ]
+  "cSpell.words": ["Noyon", "Rahman", "tseslint"]
 }

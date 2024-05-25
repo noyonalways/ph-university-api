@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 // import studentSchema from "../student/student.validation";
 import userService from "../user/user.service";
+import { sendResponse } from "../../utils";
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -14,8 +15,9 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     // }
 
     const result = await userService.create(password, studentData);
-    return res.status(201).json({
-      status: true,
+    sendResponse(res, {
+      statusCode: 201,
+      success: true,
       message: "Student created successfully",
       data: result,
     });

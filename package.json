@@ -1,15 +1,15 @@
 {
-  "name": "mongoose-test",
+  "name": "ph-university",
   "version": "1.0.0",
   "description": "",
   "main": "./dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only ./src/server.ts",
     "start": "tsc && node ./dist/server.js",
-    "lint": "npx eslint ./src",
-    "lint:fix": "npx eslint ./src --fix",
-    "format": "prettier ./ --write \"./**/*.+(js|ts|json)\"",
-    "format:check": "npx prettier ./ --check",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "format": "prettier ./src --write \"./.+(js|ts|json)\"",
+    "format:check": "prettier ./src --check",
     "build": "tsc"
   },
   "keywords": [],
