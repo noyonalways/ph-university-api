@@ -1,65 +1,53 @@
-import { RequestHandler } from "express";
 import studentService from "./student.service";
 import { IStudent } from "./student.interface";
-import { sendResponse } from "../../utils";
+import { catchAsync, sendResponse } from "../../utils";
 
-const getAll: RequestHandler = async (_req, res, next) => {
-  try {
-    const students: IStudent[] = await studentService.getAll();
+const getAll = catchAsync(async (_req, res) => {
+  const students: IStudent[] = await studentService.getAll();
 
-    return sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Student data retrieved successfully",
-      data: students,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Student data retrieved successfully",
+    data: students,
+  });
+});
 
-const getSingle: RequestHandler = async (req, res, next) => {
+const getSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
-  try {
-    const student: IStudent | null = await studentService.findByProperty(
-      "id",
-      id,
-    );
 
-    if (!student) {
-      return sendResponse(res, {
-        statusCode: 404,
-        success: false,
-        message: "Student not found",
-        data: undefined,
-      });
-    }
+  const student: IStudent | null = await studentService.findByProperty(
+    "id",
+    id,
+  );
 
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Student data retrieved successfully",
-      data: student,
+  if (!student) {
+    return sendResponse(res, {
+      statusCode: 404,
+      success: false,
+      message: "Student not found",
+      data: undefined,
     });
-  } catch (error) {
-    next(error);
   }
-};
 
-const deleteSingle: RequestHandler = async (req, res, next) => {
-  try {
-    const { id } = req.params;
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Student data retrieved successfully",
+    data: student,
+  });
+});
 
-    const result = await studentService.deleteSingle(id);
-    sendResponse(res, {
-      statusCode: 200,
-      success: true,
-      message: "Student deleted successfully",
-      data: result,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+const deleteSingle = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await studentService.deleteSingle(id);
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Student deleted successfully",
+    data: result,
+  });
+});
 
 export default { getAll, getSingle, deleteSingle };
