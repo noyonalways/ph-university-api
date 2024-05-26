@@ -5,8 +5,6 @@ import {
   IStudent,
   IStudentModel,
   IUserName,
-  // IStudentMethods,
-  // TStudentModel,
 } from "./student.interface";
 
 const userNameSchema = new Schema<IUserName>({

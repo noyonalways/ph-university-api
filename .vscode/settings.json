@@ -3,7 +3,15 @@
   "workbench.iconTheme": "material-icon-theme",
   "editor.fontFamily": "Fira Code",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
   "editor.formatOnSave": true,
   "editor.tabSize": 2,
-  "cSpell.words": ["Noyon", "Rahman", "tseslint"]
+  "cSpell.words": [
+    "Noyon",
+    "Rahman",
+    "tseslint",
+    "virtuals"
+  ]
 }

@@ -50,32 +50,37 @@ const localGuardianSchema = z.object({
 });
 
 // Define the Zod schema for IStudent
-const studentSchema = z.object(
-  {
-    id: z.string(),
-    name: userNameSchema,
-    gender: z.enum(["male", "female", "other"]),
-    dateOfBirth: z.string(),
-    email: z
-      .string({ message: "email is required" })
-      .email({ message: "provide a valid email address" }),
-    contactNo: z.string(),
-    emergencyContactNo: z.string(),
-    bloodGroup: z
-      .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+const studentSchema = z.object({
+  body: z.object({
+    password: z
+      .string({
+        invalid_type_error: "password must be string",
+      })
+      .min(8, { message: "password must be at least 8 characters" })
+      .max(20, { message: "password can not be more than 20 characters" })
       .optional(),
-    presentAddress: z.string(),
-    permanentAddress: z.string(),
-    guardian: guardianSchema,
-    localGuardian: localGuardianSchema,
-    profileImage: z
-      .string()
-      .url({ message: "profileImage must be a valid image url" })
-      .optional(),
-    isActive: z.enum(["active", "inactive"]).default("active").optional(),
-    isDeleted: z.boolean().default(false).optional(),
-  },
-  { message: "students data is required" },
-);
+    student: z.object({
+      name: userNameSchema,
+      gender: z.enum(["male", "female", "other"]),
+      dateOfBirth: z.string(),
+      email: z
+        .string({ message: "email is required" })
+        .email({ message: "provide a valid email address" }),
+      contactNo: z.string(),
+      emergencyContactNo: z.string(),
+      bloodGroup: z
+        .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+        .optional(),
+      presentAddress: z.string(),
+      permanentAddress: z.string(),
+      guardian: guardianSchema,
+      localGuardian: localGuardianSchema,
+      profileImage: z
+        .string()
+        .url({ message: "profileImage must be a valid image url" })
+        .optional(),
+    }),
+  }),
+});
 
 export default studentSchema;

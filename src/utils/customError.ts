@@ -8,5 +8,6 @@ export function customError(
   const err: TCustomError = new Error(message);
   err.status = status;
   err.success = success;
+
   return err;
 }
