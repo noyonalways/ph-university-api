@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
 // import studentSchema from "../student/student.validation";
 import userService from "../user/user.service";
 import { sendResponse } from "../../utils";
+import { RequestHandler } from "express";
 
-const create = async (req: Request, res: Response, next: NextFunction) => {
+const create: RequestHandler = async (req, res, next) => {
   try {
     const { password, student: studentData } = req.body;
     // const { data, error } = studentSchema.safeParse(studentData);

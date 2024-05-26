@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { RequestHandler } from "express";
 import studentService from "./student.service";
 import { IStudent } from "./student.interface";
 import { sendResponse } from "../../utils";
 
-const getAll = async (_req: Request, res: Response, next: NextFunction) => {
+const getAll: RequestHandler = async (_req, res, next) => {
   try {
     const students: IStudent[] = await studentService.getAll();
 
@@ -18,7 +18,7 @@ const getAll = async (_req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getSingle = async (req: Request, res: Response, next: NextFunction) => {
+const getSingle: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   try {
     const student: IStudent | null = await studentService.findByProperty(
@@ -46,11 +46,7 @@ const getSingle = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const deleteSingle = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const deleteSingle: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
