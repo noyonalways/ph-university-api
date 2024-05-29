@@ -1,7 +1,10 @@
 import { Router } from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import academicSemesterController from "./academicSemester.controller";
-import academicSemesterSchema from "./academicSemester.validation";
+import {
+  academicSemesterSchema,
+  updateAcademicSemesterSchema,
+} from "./academicSemester.validation";
 
 const router: Router = Router();
 
@@ -16,6 +19,9 @@ router
 router
   .route("/:semesterId")
   .get(academicSemesterController.getSingle)
-  .patch(academicSemesterController.updateSingle);
+  .patch(
+    validateRequest(updateAcademicSemesterSchema),
+    academicSemesterController.updateSingle,
+  );
 
 export default router;

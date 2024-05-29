@@ -1,16 +1,26 @@
 import { NextFunction, Request, Response } from "express";
-import { AnyZodObject } from "zod";
+import { AnyZodObject, ZodError } from "zod";
 
 const validateRequest = (schema: AnyZodObject) => {
-  return async (req: Request, _res: Response, next: NextFunction) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
     try {
       // validation check
       await schema.parseAsync({ body: req.body });
 
       // if everything all right then next()  ->
       next();
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      // Handle Zod validation errors
+      if (error instanceof ZodError) {
+        return res.status(400).json({
+          status: "error",
+          message: "Validation failed",
+          errors: error.errors,
+        });
+      }
+
+      // Handle other types of errors
+      next(error);
     }
   };
 };
