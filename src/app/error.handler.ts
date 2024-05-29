@@ -20,6 +20,6 @@ export const globalErrorHandler = (
 ) => {
   return res.status(error.status || 500).json({
     success: error.success,
-    message: error || "something went wrong",
+    message: error.message || "something went wrong",
   });
 };
