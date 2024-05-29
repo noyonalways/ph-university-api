@@ -12,7 +12,7 @@ const create = (payload: TAcademicSemester) => {
    */
 
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
-    throw customError(false, 400, "Invalid academic semester");
+    throw customError(false, 400, "Invalid Semester Code");
   }
 
   return AcademicSemester.create(payload);
@@ -36,6 +36,14 @@ const findByProperty = (key: string, value: string) => {
 
 // update semester by id
 const updateSingle = (id: string, payload: TAcademicSemester) => {
+  if (
+    payload.name &&
+    payload.code &&
+    academicSemesterNameCodeMapper[payload.name] !== payload.code
+  ) {
+    throw customError(false, 400, "Invalid Semester Code");
+  }
+
   return AcademicSemester.findByIdAndUpdate(id, payload, { new: true });
 };
 

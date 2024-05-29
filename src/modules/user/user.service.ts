@@ -1,11 +1,14 @@
 import config from "../../config";
+import { customError } from "../../utils";
+import academicSemesterService from "../academic-semester/academicSemester.service";
 // import { customError } from "../../utils";
 import { IStudent } from "../student/student.interface";
 import Student from "../student/student.model";
 import { IUser } from "./user.interface";
 import User from "./user.model";
+import generateStudentId from "./user.utils";
 
-const create = async (password: string, studentData: IStudent) => {
+const create = async (password: string, payload: IStudent) => {
   // if (await Student.isUserExists(data.email)) {
   //   throw customError(400, "Email already exists");
   // }
@@ -14,22 +17,33 @@ const create = async (password: string, studentData: IStudent) => {
   const userData: Partial<IUser> = {};
   userData.password = password || (config.default_password_user as string);
 
-  // set student role
-  userData.role = "student";
+  // find academic semester info
+  const admissionSemester = await academicSemesterService.findByProperty(
+    "_id",
+    payload.admissionSemester.toString(),
+  );
+
+  if (!admissionSemester) {
+    throw customError(false, 404, "Admission semester not found");
+  }
 
   // set manually generated id
-  userData.id = "2030100001";
+  // userData.id = "2030100001";
+
+  // set student role
+  userData.role = "student";
+  userData.id = await generateStudentId(admissionSemester);
 
   // create a user
   const newUser = await User.create(userData); // built-in static method
 
   // create a student
   if (Object.keys(newUser).length) {
-    studentData.id = newUser.id;
-    studentData.user = newUser._id; // reference _id
+    payload.id = newUser.id;
+    payload.user = newUser._id; // reference _id
 
     // create a student
-    const newStudent = await Student.create(studentData);
+    const newStudent = await Student.create(payload);
     return newStudent;
   }
 

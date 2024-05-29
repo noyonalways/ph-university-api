@@ -62,7 +62,7 @@ const studentSchema = z.object({
     student: z.object({
       name: userNameSchema,
       gender: z.enum(["male", "female", "other"]),
-      dateOfBirth: z.date().optional(),
+      dateOfBirth: z.string().optional(),
       email: z
         .string({ message: "email is required" })
         .email({ message: "provide a valid email address" }),
@@ -79,6 +79,7 @@ const studentSchema = z.object({
         .string()
         .url({ message: "profileImage must be a valid image url" })
         .optional(),
+      admissionSemester: z.string(),
     }),
   }),
 });
