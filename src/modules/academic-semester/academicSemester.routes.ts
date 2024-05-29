@@ -5,10 +5,17 @@ import academicSemesterSchema from "./academicSemester.validation";
 
 const router: Router = Router();
 
-router.post(
-  "/",
-  validateRequest(academicSemesterSchema),
-  academicSemesterController.create,
-);
+router
+  .route("/")
+  .post(
+    validateRequest(academicSemesterSchema),
+    academicSemesterController.create,
+  )
+  .get(academicSemesterController.getAll);
+
+router
+  .route("/:semesterId")
+  .get(academicSemesterController.getSingle)
+  .patch(academicSemesterController.updateSingle);
 
 export default router;
