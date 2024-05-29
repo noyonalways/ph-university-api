@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
-import { IUser } from "./user.interface";
 import bcrypt from "bcrypt";
+import { Schema, model } from "mongoose";
 import config from "../../config";
+import { IUser } from "./user.interface";
 
 const userSchema = new Schema<IUser>(
   {
@@ -12,6 +12,7 @@ const userSchema = new Schema<IUser>(
     password: {
       type: String,
       required: [true, "password is required"],
+      minlength: [8, "password must be at least 8 characters"],
     },
     needsPasswordChange: {
       type: Boolean,

@@ -62,7 +62,7 @@ const studentSchema = z.object({
     student: z.object({
       name: userNameSchema,
       gender: z.enum(["male", "female", "other"]),
-      dateOfBirth: z.string(),
+      dateOfBirth: z.date(),
       email: z
         .string({ message: "email is required" })
         .email({ message: "provide a valid email address" }),
