@@ -1,9 +1,17 @@
 import { isValidObjectId } from "mongoose";
-import Student from "./student.model";
 import { customError } from "../../utils";
+import Student from "./student.model";
 
 const getAll = () => {
-  return Student.find({}).select("-password");
+  return Student.find({})
+    .select("-password")
+    .populate("admissionSemester")
+    .populate({
+      path: "academicDepartment",
+      populate: {
+        path: "academicFaculty",
+      },
+    });
 };
 
 const findByProperty = (key: string, value: string) => {

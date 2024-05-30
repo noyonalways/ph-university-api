@@ -25,7 +25,7 @@ const create = async (payload: TAcademicDepartment) => {
 
 // get all academic departments
 const getAll = () => {
-  return AcademicDepartment.find({});
+  return AcademicDepartment.find({}).populate("academicFaculty");
 };
 
 // find academic department by property
@@ -38,7 +38,7 @@ const findByProperty = (key: string, value: string) => {
         "invalid academic department id",
       );
     }
-    return AcademicDepartment.findById(value);
+    return AcademicDepartment.findById(value).populate("academicFaculty");
   }
   return AcademicDepartment.findOne({ [key]: value });
 };

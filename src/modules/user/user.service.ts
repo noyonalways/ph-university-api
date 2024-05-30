@@ -1,7 +1,7 @@
 import config from "../../config";
 import { customError } from "../../utils";
+import academicDepartmentService from "../academic-department/academicDepartment.service";
 import academicSemesterService from "../academic-semester/academicSemester.service";
-// import { customError } from "../../utils";
 import { IStudent } from "../student/student.interface";
 import Student from "../student/student.model";
 import { IUser } from "./user.interface";
@@ -25,6 +25,15 @@ const create = async (password: string, payload: IStudent) => {
 
   if (!admissionSemester) {
     throw customError(false, 404, "Admission semester not found");
+  }
+
+  const academicDepartment = await academicDepartmentService.findByProperty(
+    "_id",
+    payload.academicDepartment.toString(),
+  );
+
+  if (!academicDepartment) {
+    throw customError(false, 404, "Admission Department not found");
   }
 
   // set manually generated id
