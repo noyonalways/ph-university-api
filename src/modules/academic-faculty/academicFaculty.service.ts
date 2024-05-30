@@ -1,7 +1,7 @@
 import { isValidObjectId } from "mongoose";
 import { customError } from "../../utils";
 import { TAcademicFaculty } from "./academicFaculty.interface";
-import { AcademicFaculty } from "./academicFaculty.model";
+import AcademicFaculty from "./academicFaculty.model";
 
 // create a new academic faculty
 const create = async (payload: TAcademicFaculty) => {
