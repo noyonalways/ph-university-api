@@ -11,9 +11,10 @@ import User from "./user.model";
 import generateStudentId from "./user.utils";
 
 const create = async (password: string, payload: IStudent) => {
-  // if (await Student.isUserExists(data.email)) {
-  //   throw customError(400, "Email already exists");
-  // }
+  // check if the user has already been created with provide email
+  if (await Student.isUserExists(payload.email)) {
+    throw customError(false, httpStatus.BAD_REQUEST, "Email already exists");
+  }
 
   // if password is not given, use default password
   const userData: Partial<IUser> = {};
@@ -71,7 +72,7 @@ const create = async (password: string, payload: IStudent) => {
     await session.commitTransaction();
     await session.endSession();
 
-    return newStudent;
+    return newStudent[0];
   } catch (err) {
     // abort transaction and end session
     await session.abortTransaction();
