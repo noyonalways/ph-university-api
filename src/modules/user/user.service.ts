@@ -39,14 +39,16 @@ const create = async (password: string, payload: IStudent) => {
     throw customError(false, 404, "Admission Department not found");
   }
 
+  // set student role
+  userData.role = "student";
+
   const session = await mongoose.startSession();
 
   try {
     // start transaction
     session.startTransaction();
 
-    // set student role
-    userData.role = "student";
+    // set student id
     userData.id = await generateStudentId(admissionSemester);
 
     // create a user (transaction-1)
@@ -77,7 +79,11 @@ const create = async (password: string, payload: IStudent) => {
     // abort transaction and end session
     await session.abortTransaction();
     await session.endSession();
-    console.log(err);
+    throw customError(
+      false,
+      httpStatus.BAD_REQUEST,
+      "failed to create student",
+    );
   }
 };
 
