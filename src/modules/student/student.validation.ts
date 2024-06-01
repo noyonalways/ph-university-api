@@ -79,7 +79,18 @@ const studentSchema = z.object({
         .string()
         .url({ message: "profileImage must be a valid image url" })
         .optional(),
-      admissionSemester: z.string(),
+      admissionSemester: z
+        .string({
+          invalid_type_error: "admission semester must be string",
+          required_error: "admission semester id is required",
+        })
+        .min(10, "admission semester must be at least 10 characters"),
+      academicDepartment: z
+        .string({
+          invalid_type_error: "academic department must be string",
+          required_error: "academic department id is required",
+        })
+        .min(10, "academic department must be at least 10 characters"),
     }),
   }),
 });

@@ -142,6 +142,10 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
       ref: "AcademicSemester",
       required: true,
     },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicDepartment",
+    },
     isDeleted: {
       type: Boolean,
       default: false,

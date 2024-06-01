@@ -1,7 +1,7 @@
 import http from "http";
+import mongoose from "mongoose";
 import app from "./app/app";
 import config from "./config";
-import mongoose from "mongoose";
 
 const server = http.createServer(app);
 

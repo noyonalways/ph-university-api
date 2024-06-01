@@ -1,7 +1,9 @@
+import httpStatus from "http-status";
+import mongoose from "mongoose";
 import config from "../../config";
 import { customError } from "../../utils";
+import academicDepartmentService from "../academic-department/academicDepartment.service";
 import academicSemesterService from "../academic-semester/academicSemester.service";
-// import { customError } from "../../utils";
 import { IStudent } from "../student/student.interface";
 import Student from "../student/student.model";
 import { IUser } from "./user.interface";
@@ -9,9 +11,10 @@ import User from "./user.model";
 import generateStudentId from "./user.utils";
 
 const create = async (password: string, payload: IStudent) => {
-  // if (await Student.isUserExists(data.email)) {
-  //   throw customError(400, "Email already exists");
-  // }
+  // check if the user has already been created with provide email
+  if (await Student.isUserExists(payload.email)) {
+    throw customError(false, httpStatus.BAD_REQUEST, "Email already exists");
+  }
 
   // if password is not given, use default password
   const userData: Partial<IUser> = {};
@@ -27,31 +30,61 @@ const create = async (password: string, payload: IStudent) => {
     throw customError(false, 404, "Admission semester not found");
   }
 
-  // set manually generated id
-  // userData.id = "2030100001";
+  const academicDepartment = await academicDepartmentService.findByProperty(
+    "_id",
+    payload.academicDepartment.toString(),
+  );
+
+  if (!academicDepartment) {
+    throw customError(false, 404, "Admission Department not found");
+  }
 
   // set student role
   userData.role = "student";
-  userData.id = await generateStudentId(admissionSemester);
 
-  // create a user
-  const newUser = await User.create(userData); // built-in static method
+  const session = await mongoose.startSession();
 
-  // create a student
-  if (Object.keys(newUser).length) {
-    payload.id = newUser.id;
-    payload.user = newUser._id; // reference _id
+  try {
+    // start transaction
+    session.startTransaction();
 
-    // create a student
-    const newStudent = await Student.create(payload);
-    return newStudent;
+    // set student id
+    userData.id = await generateStudentId(admissionSemester);
+
+    // create a user (transaction-1)
+    const newUser = await User.create([userData], { session }); // built-in static method
+    if (!newUser.length) {
+      throw customError(false, httpStatus.BAD_REQUEST, "Failed to create user");
+    }
+
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id; // reference _id
+
+    // create a student (transaction-2)
+    const newStudent = await Student.create([payload], { session });
+    if (!newStudent.length) {
+      throw customError(
+        false,
+        httpStatus.BAD_REQUEST,
+        "Failed to create student",
+      );
+    }
+
+    // commit transaction and end session
+    await session.commitTransaction();
+    await session.endSession();
+
+    return newStudent[0];
+  } catch (err) {
+    // abort transaction and end session
+    await session.abortTransaction();
+    await session.endSession();
+    throw customError(
+      false,
+      httpStatus.BAD_REQUEST,
+      "failed to create student",
+    );
   }
-
-  // const student = new Student({ ...data });
-  // mongoose custom instance method
-  // if (await student.isUserExists(data.email))
-  //   throw customError(400, "Email already exists");
-  // return student.save(); // built-in instance method
 };
 
 export default {
