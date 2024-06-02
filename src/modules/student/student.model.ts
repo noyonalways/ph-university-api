@@ -102,7 +102,7 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
       required: true,
     },
     dateOfBirth: {
-      type: Date,
+      type: String,
     },
     email: {
       type: String,
@@ -177,9 +177,8 @@ studentSchema.pre("findOne", function (next) {
 // };
 
 // mongoose custom static method create
-studentSchema.statics.isUserExists = async function (email: string) {
-  const existingUser = await Student.findOne({ email });
-  return existingUser;
+studentSchema.statics.isStudentExists = function (key: string, value: string) {
+  return Student.findOne({ [key]: value });
 };
 
 // mongoose virtual method create

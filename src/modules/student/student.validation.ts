@@ -17,7 +17,7 @@ const capitalize = (str: string) => {
 };
 
 // Define the Zod schema for IUserName
-const userNameSchema = z.object(
+const createUserNameValidationSchema = z.object(
   {
     firstName: z
       .string({ message: "firstName is required" })
@@ -32,7 +32,7 @@ const userNameSchema = z.object(
 );
 
 // Define the Zod schema for IGuardian
-const guardianSchema = z.object({
+const createGuardianValidationSchema = z.object({
   fatherName: z.string(),
   fatherOccupation: z.string(),
   fatherContactNo: z.string(),
@@ -42,7 +42,7 @@ const guardianSchema = z.object({
 });
 
 // Define the Zod schema for ILocalGuardian
-const localGuardianSchema = z.object({
+const createLocalGuardianValidationSchema = z.object({
   name: z.string(),
   occupation: z.string(),
   contactNo: z.string(),
@@ -50,7 +50,7 @@ const localGuardianSchema = z.object({
 });
 
 // Define the Zod schema for IStudent
-const studentSchema = z.object({
+const createStudentValidationSchema = z.object({
   body: z.object({
     password: z
       .string({
@@ -60,7 +60,7 @@ const studentSchema = z.object({
       .max(20, { message: "password can not be more than 20 characters" })
       .optional(),
     student: z.object({
-      name: userNameSchema,
+      name: createUserNameValidationSchema,
       gender: z.enum(["male", "female", "other"]),
       dateOfBirth: z.string().optional(),
       email: z
@@ -73,8 +73,8 @@ const studentSchema = z.object({
         .optional(),
       presentAddress: z.string(),
       permanentAddress: z.string(),
-      guardian: guardianSchema,
-      localGuardian: localGuardianSchema,
+      guardian: createGuardianValidationSchema,
+      localGuardian: createLocalGuardianValidationSchema,
       profileImage: z
         .string()
         .url({ message: "profileImage must be a valid image url" })
@@ -95,4 +95,75 @@ const studentSchema = z.object({
   }),
 });
 
-export default studentSchema;
+const updateUserNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .min(3, "firstName must be more than 3 characters")
+    .max(20, "firstName can't be more than 20 characters")
+    .transform(capitalize)
+    .optional(),
+  middleName: z.string().optional(),
+  lastName: z
+    .string()
+    .max(20, "lastName can't be more than 20 characters")
+    .optional(),
+});
+
+const updateGuardianValidationSchema = z.object({
+  fatherName: z.string().optional(),
+  fatherOccupation: z.string().optional(),
+  fatherContactNo: z.string().optional(),
+  motherName: z.string().optional(),
+  motherOccupation: z.string().optional(),
+  motherContactNo: z.string().optional(),
+});
+
+const updateLocalGuardianValidationSchema = z.object({
+  name: z.string().optional(),
+  occupation: z.string().optional(),
+  contactNo: z.string().optional(),
+  address: z.string().optional(),
+});
+
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z
+      .object({
+        name: updateUserNameValidationSchema.optional(),
+        gender: z.enum(["male", "female", "other"]).optional(),
+        dateOfBirth: z.string().optional(),
+        email: z
+          .string()
+          .email({ message: "provide a valid email address" })
+          .optional(),
+        contactNo: z.string().optional(),
+        emergencyContactNo: z.string().optional(),
+        bloodGroup: z
+          .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+          .optional(),
+        presentAddress: z.string().optional(),
+        permanentAddress: z.string().optional(),
+        guardian: updateGuardianValidationSchema.optional(),
+        localGuardian: updateLocalGuardianValidationSchema.optional(),
+        profileImage: z
+          .string()
+          .url({ message: "profileImage must be a valid image url" })
+          .optional(),
+        admissionSemester: z
+          .string({
+            invalid_type_error: "admission semester must be string",
+          })
+          .min(10, "admission semester must be at least 10 characters")
+          .optional(),
+        academicDepartment: z
+          .string({
+            invalid_type_error: "academic department must be string",
+          })
+          .min(10, "academic department must be at least 10 characters")
+          .optional(),
+      })
+      .optional(),
+  }),
+});
+
+export { createStudentValidationSchema, updateStudentValidationSchema };

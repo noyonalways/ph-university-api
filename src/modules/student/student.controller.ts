@@ -1,6 +1,6 @@
-import studentService from "./student.service";
-import { IStudent } from "./student.interface";
 import { catchAsync, sendResponse } from "../../utils";
+import { IStudent } from "./student.interface";
+import studentService from "./student.service";
 
 const getAll = catchAsync(async (_req, res) => {
   const students: IStudent[] = await studentService.getAll();
@@ -38,6 +38,21 @@ const getSingle = catchAsync(async (req, res) => {
   });
 });
 
+// update student
+const updateSingle = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { student } = req.body;
+
+  const result = await studentService.updateSingle(id, student);
+  return sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "Student updated successfully",
+    data: result,
+  });
+});
+
+// delete student
 const deleteSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
 
@@ -50,4 +65,9 @@ const deleteSingle = catchAsync(async (req, res) => {
   });
 });
 
-export default { getAll, getSingle, deleteSingle };
+export default {
+  getAll,
+  getSingle,
+  updateSingle,
+  deleteSingle,
+};
