@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import mongoose, { isValidObjectId } from "mongoose";
-import { customError } from "../../utils";
+import AppError from "../../errors/AppError";
 import User from "../user/user.model";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
@@ -20,7 +20,7 @@ const getAll = () => {
 const findByProperty = (key: string, value: string) => {
   if (key === "_id") {
     if (!isValidObjectId(value)) {
-      throw customError(false, httpStatus.BAD_REQUEST, "Invalid productId");
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid productId");
     }
     return Student.findById(value)
       .populate("admissionSemester")
@@ -45,7 +45,7 @@ const findByProperty = (key: string, value: string) => {
 // update student
 const updateSingle = async (id: string, payload: IStudent) => {
   if (!(await Student.isStudentExists("id", id))) {
-    throw customError(false, httpStatus.NOT_FOUND, "student not found");
+    throw new AppError(httpStatus.NOT_FOUND, "student not found");
   }
 
   // destructure the non-primitive data
@@ -85,7 +85,7 @@ const updateSingle = async (id: string, payload: IStudent) => {
 // delete soft single student
 const deleteSingle = async (id: string) => {
   if (!(await Student.isStudentExists("id", id))) {
-    throw customError(false, httpStatus.NOT_FOUND, "student not found");
+    throw new AppError(httpStatus.NOT_FOUND, "student not found");
   }
 
   const session = await mongoose.startSession();
@@ -101,11 +101,7 @@ const deleteSingle = async (id: string) => {
     );
 
     if (!deletedStudent) {
-      throw customError(
-        false,
-        httpStatus.BAD_REQUEST,
-        "Failed to delete student",
-      );
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student");
     }
 
     // transaction-2
@@ -116,7 +112,7 @@ const deleteSingle = async (id: string) => {
     );
 
     if (!deletedUser) {
-      throw customError(false, httpStatus.BAD_REQUEST, "Failed to delete user");
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete user");
     }
 
     // commit transaction and end session
@@ -128,11 +124,7 @@ const deleteSingle = async (id: string) => {
     // about transaction and end session
     await session.abortTransaction();
     await session.endSession();
-    throw customError(
-      false,
-      httpStatus.BAD_REQUEST,
-      "Failed to delete student",
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student");
   }
 };
 

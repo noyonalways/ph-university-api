@@ -1,25 +1,86 @@
-import { NextFunction, Request, Response } from "express";
-import { TCustomError } from "../types";
+import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import { ZodError } from "zod";
+import config from "../config";
+import AppError from "../errors/AppError";
+import handleCastError from "../errors/handleCastError";
+import handleDuplicateIdError from "../errors/handleDuplicateIdError";
+import handleValidationError from "../errors/handleValidationError";
+import handleZodError from "../errors/handleZodError";
+import { TErrorSources } from "../interface";
 
+// not found error handler
 export const notFoundErrorHandler = (
   _req: Request,
   _res: Response,
   next: NextFunction,
 ) => {
-  const err: TCustomError = new Error("Route not found");
-  err.success = false;
-  err.status = 404;
+  const err: AppError = new AppError(404, "Route not found");
   next(err);
 };
 
-export const globalErrorHandler = (
-  error: TCustomError,
-  _req: Request,
-  res: Response,
-  _next: NextFunction,
+export const globalErrorHandler: ErrorRequestHandler = (
+  error,
+  _req,
+  res,
+  _next,
 ) => {
-  return res.status(error.status || 500).json({
-    success: error.success,
-    message: error.message || "something went wrong",
+  let statusCode = 500;
+  let message = "something went wrong";
+
+  let errorSources: TErrorSources = [
+    {
+      path: "",
+      message: "something went wrong",
+    },
+  ];
+
+  if (error instanceof ZodError) {
+    const simplifiedError = handleZodError(error);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (error.name === "ValidationError") {
+    const simplifiedError = handleValidationError(error);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (error.name === "CastError") {
+    const simplifiedError = handleCastError(error);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (error.code === 11000) {
+    const simplifiedError = handleDuplicateIdError(error);
+
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorSources = simplifiedError.errorSources;
+  } else if (error instanceof AppError) {
+    statusCode = error.statusCode;
+    message = error.message;
+    errorSources = [
+      {
+        path: "",
+        message: error.message,
+      },
+    ];
+  } else if (error instanceof Error) {
+    message = error.message;
+    errorSources = [
+      {
+        path: "",
+        message: error.message,
+      },
+    ];
+  }
+
+  return res.status(statusCode).json({
+    success: false,
+    message,
+    errorSources,
+    stack: config.NODE_ENV === "development" ? error.stack : null,
   });
 };

@@ -1,7 +1,7 @@
 import httpStatus from "http-status";
 import mongoose from "mongoose";
 import config from "../../config";
-import { customError } from "../../utils";
+import AppError from "../../errors/AppError";
 import academicDepartmentService from "../academic-department/academicDepartment.service";
 import academicSemesterService from "../academic-semester/academicSemester.service";
 import { IStudent } from "../student/student.interface";
@@ -13,7 +13,7 @@ import generateStudentId from "./user.utils";
 const create = async (password: string, payload: IStudent) => {
   // check if the user has already been created with provide email
   if (await Student.isStudentExists("email", payload.email)) {
-    throw customError(false, httpStatus.BAD_REQUEST, "Email already exists");
+    throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
   }
 
   // if password is not given, use default password
@@ -27,7 +27,7 @@ const create = async (password: string, payload: IStudent) => {
   );
 
   if (!admissionSemester) {
-    throw customError(false, 404, "Admission semester not found");
+    throw new AppError(404, "Admission semester not found");
   }
 
   const academicDepartment = await academicDepartmentService.findByProperty(
@@ -36,7 +36,7 @@ const create = async (password: string, payload: IStudent) => {
   );
 
   if (!academicDepartment) {
-    throw customError(false, 404, "Admission Department not found");
+    throw new AppError(404, "Admission Department not found");
   }
 
   // set student role
@@ -54,7 +54,7 @@ const create = async (password: string, payload: IStudent) => {
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // built-in static method
     if (!newUser.length) {
-      throw customError(false, httpStatus.BAD_REQUEST, "Failed to create user");
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create user");
     }
 
     payload.id = newUser[0].id;
@@ -63,11 +63,7 @@ const create = async (password: string, payload: IStudent) => {
     // create a student (transaction-2)
     const newStudent = await Student.create([payload], { session });
     if (!newStudent.length) {
-      throw customError(
-        false,
-        httpStatus.BAD_REQUEST,
-        "Failed to create student",
-      );
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create student");
     }
 
     // commit transaction and end session
@@ -79,11 +75,7 @@ const create = async (password: string, payload: IStudent) => {
     // abort transaction and end session
     await session.abortTransaction();
     await session.endSession();
-    throw customError(
-      false,
-      httpStatus.BAD_REQUEST,
-      "failed to create student",
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, "failed to create student");
   }
 };
 

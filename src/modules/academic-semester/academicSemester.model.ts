@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { customError } from "../../utils";
+import AppError from "../../errors/AppError";
 import {
   AcademicSemesterCodes,
   AcademicSemesterNames,
@@ -46,7 +46,7 @@ academicSemesterSchema.pre("save", async function (next) {
   });
 
   if (isSemesterExists) {
-    throw customError(false, 400, "Semester already exists");
+    throw new AppError(400, "Semester already exists");
   }
 
   next();
