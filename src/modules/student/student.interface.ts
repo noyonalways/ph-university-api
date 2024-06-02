@@ -55,5 +55,5 @@ export interface IStudent {
 
 // for creating mongoose custom static methods
 export interface IStudentModel extends Model<IStudent> {
-  isUserExists(email: string): Promise<IStudent | null>;
+  isStudentExists(key: string, value: string): Promise<IStudent | null>;
 }

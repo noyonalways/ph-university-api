@@ -12,7 +12,7 @@ import generateStudentId from "./user.utils";
 
 const create = async (password: string, payload: IStudent) => {
   // check if the user has already been created with provide email
-  if (await Student.isUserExists(payload.email)) {
+  if (await Student.isStudentExists("email", payload.email)) {
     throw customError(false, httpStatus.BAD_REQUEST, "Email already exists");
   }
 
