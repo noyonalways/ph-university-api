@@ -5,8 +5,33 @@ import User from "../user/user.model";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
 
-const getAll = () => {
-  return Student.find({})
+const getAll = async (query: Record<string, unknown>) => {
+  const queryObj = { ...query };
+
+  const studentSearchableFields = [
+    "email",
+    "name.firstName",
+    "name.middleName",
+    "presentAddress",
+  ];
+  let searchTerm: string = "";
+
+  if (query.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: "i" },
+    })),
+  });
+
+  // filtering
+  const excludeFields = ["searchTerm", "sort", "limit"];
+  excludeFields.forEach((item) => delete queryObj[item]);
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .select("-password")
     .populate("admissionSemester")
     .populate({
@@ -15,6 +40,23 @@ const getAll = () => {
         path: "academicFaculty",
       },
     });
+
+  let sort = "-createdAt";
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  const sortQuery = filterQuery.sort(sort);
+
+  let limit = 1;
+
+  if (query.limit) {
+    limit = parseInt(query.limit as string);
+  }
+
+  const limitQuery = await sortQuery.limit(limit);
+
+  return limitQuery;
 };
 
 const findByProperty = (key: string, value: string) => {
