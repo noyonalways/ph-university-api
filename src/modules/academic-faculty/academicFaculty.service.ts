@@ -1,5 +1,6 @@
+import httpStatus from "http-status";
 import { isValidObjectId } from "mongoose";
-import { customError } from "../../utils";
+import AppError from "../../errors/AppError";
 import { TAcademicFaculty } from "./academicFaculty.interface";
 import AcademicFaculty from "./academicFaculty.model";
 
@@ -7,7 +8,7 @@ import AcademicFaculty from "./academicFaculty.model";
 const create = async (payload: TAcademicFaculty) => {
   const faculty = await findByProperty("name", payload.name);
   if (faculty) {
-    throw customError(false, 400, "Academic Faculty already exists");
+    throw new AppError(400, "Academic Faculty already exists");
   }
 
   return AcademicFaculty.create(payload);
@@ -22,7 +23,7 @@ const getAll = () => {
 const findByProperty = (key: string, value: string) => {
   if (key === "_id") {
     if (!isValidObjectId(value)) {
-      throw customError(false, 400, "invalid faculty id");
+      throw new AppError(400, "invalid faculty id");
     }
     return AcademicFaculty.findById(value);
   }
@@ -32,7 +33,7 @@ const findByProperty = (key: string, value: string) => {
 // update academic faculty
 const updateSingle = async (id: string, payload: TAcademicFaculty) => {
   if (!isValidObjectId(id)) {
-    throw customError(false, 400, "invalid faculty id");
+    throw new AppError(httpStatus.BAD_REQUEST, "invalid faculty id");
   }
 
   const faculty = await AcademicFaculty.findByIdAndUpdate(id, payload, {
@@ -40,7 +41,7 @@ const updateSingle = async (id: string, payload: TAcademicFaculty) => {
   });
 
   if (!faculty) {
-    throw customError(false, 404, "Academic Faculty not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Academic Faculty not found");
   }
 
   return faculty;

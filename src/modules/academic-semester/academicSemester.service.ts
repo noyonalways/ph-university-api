@@ -1,5 +1,5 @@
 import { isValidObjectId } from "mongoose";
-import { customError } from "../../utils";
+import AppError from "../../errors/AppError";
 import { academicSemesterNameCodeMapper } from "./academicSemester.constants";
 import { TAcademicSemester } from "./academicSemester.interface";
 import AcademicSemester from "./academicSemester.model";
@@ -12,7 +12,7 @@ const create = (payload: TAcademicSemester) => {
    */
 
   if (academicSemesterNameCodeMapper[payload.name] !== payload.code) {
-    throw customError(false, 400, "Invalid Semester Code");
+    throw new AppError(400, "Invalid Semester Code");
   }
 
   return AcademicSemester.create(payload);
@@ -27,7 +27,7 @@ const getAll = () => {
 const findByProperty = (key: string, value: string) => {
   if (key === "_id") {
     if (!isValidObjectId(value)) {
-      throw customError(false, 400, "invalid semester id");
+      throw new AppError(400, "invalid semester id");
     }
     return AcademicSemester.findById(value);
   }
@@ -41,7 +41,7 @@ const updateSingle = (id: string, payload: TAcademicSemester) => {
     payload.code &&
     academicSemesterNameCodeMapper[payload.name] !== payload.code
   ) {
-    throw customError(false, 400, "Invalid Semester Code");
+    throw new AppError(400, "Invalid Semester Code");
   }
 
   return AcademicSemester.findByIdAndUpdate(id, payload, { new: true });

@@ -2,8 +2,8 @@ import { catchAsync, sendResponse } from "../../utils";
 import { IStudent } from "./student.interface";
 import studentService from "./student.service";
 
-const getAll = catchAsync(async (_req, res) => {
-  const students: IStudent[] = await studentService.getAll();
+const getAll = catchAsync(async (req, res) => {
+  const students: IStudent[] = await studentService.getAll(req.query);
 
   return sendResponse(res, {
     statusCode: 200,

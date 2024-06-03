@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import { isValidObjectId } from "mongoose";
-import { customError } from "../../utils";
+import AppError from "../../errors/AppError";
 import academicFacultyService from "../academic-faculty/academicFaculty.service";
 import { TAcademicDepartment } from "./academicDepartment.interface";
 import AcademicDepartment from "./academicDepartment.model";
@@ -13,11 +13,7 @@ const create = async (payload: TAcademicDepartment) => {
   );
 
   if (!academicFaculty) {
-    throw customError(
-      false,
-      httpStatus.BAD_REQUEST,
-      "Academic Faculty not found",
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, "Academic Faculty not found");
   }
 
   return AcademicDepartment.create(payload);
@@ -32,8 +28,7 @@ const getAll = () => {
 const findByProperty = (key: string, value: string) => {
   if (key === "_id") {
     if (!isValidObjectId(value)) {
-      throw customError(
-        false,
+      throw new AppError(
         httpStatus.BAD_REQUEST,
         "invalid academic department id",
       );
@@ -46,8 +41,7 @@ const findByProperty = (key: string, value: string) => {
 // update academic department
 const updateSingle = async (id: string, payload: TAcademicDepartment) => {
   if (!isValidObjectId(id)) {
-    throw customError(
-      false,
+    throw new AppError(
       httpStatus.BAD_REQUEST,
       "invalid academic department id",
     );
@@ -60,11 +54,7 @@ const updateSingle = async (id: string, payload: TAcademicDepartment) => {
     );
 
     if (!academicFaculty) {
-      throw customError(
-        false,
-        httpStatus.NOT_FOUND,
-        "Academic Faculty not found",
-      );
+      throw new AppError(httpStatus.NOT_FOUND, "Academic Faculty not found");
     }
   }
 
@@ -74,8 +64,7 @@ const updateSingle = async (id: string, payload: TAcademicDepartment) => {
     currentAcademicDepartment?.name === payload.name ||
     currentAcademicDepartment?.academicFaculty === payload.academicFaculty
   ) {
-    throw customError(
-      false,
+    throw new AppError(
       httpStatus.NOT_MODIFIED,
       "Academic Department already exists",
     );

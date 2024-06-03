@@ -1,28 +1,50 @@
-import http from "http";
+import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app/app";
 import config from "./config";
 
-const server = http.createServer(app);
+let server: Server;
 
 async function main() {
-  await mongoose
-    .connect(config.database_url as string, {
-      serverSelectionTimeoutMS: 5000,
-    })
-    .then(() => {
-      // eslint-disable-next-line no-console
-      console.log("Connected to database".cyan);
-    });
+  try {
+    await mongoose
+      .connect(config.database_url as string, {
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then(() => {
+        // eslint-disable-next-line no-console
+        console.log("Connected to database".cyan);
+      });
 
-  server.listen(config.port, () => {
+    server = app.listen(config.port, () => {
+      // eslint-disable-next-line no-console
+      console.log(
+        `Server is listening on http://localhost:${config.port}`.green,
+      );
+    });
+  } catch (err) {
     // eslint-disable-next-line no-console
-    console.log(`Server is listening on http://localhost:${config.port}`.green);
-  });
+    console.log(err);
+  }
 }
 
-main().catch((err) => {
+main();
+
+// handle unhandledRejection
+process.on("unhandledRejection", () => {
   // eslint-disable-next-line no-console
-  console.error(err);
+  console.log(`❌ unhandledRejection is detected, shutting down the server...`);
+  if (server) {
+    server.close(() => {
+      process.exit(1);
+    });
+  }
+  process.exit(1);
+});
+
+// handle uncaughtException
+process.on("uncaughtException", () => {
+  // eslint-disable-next-line no-console
+  console.log(`❌ uncaughtException is detected, shutting down the server...`);
   process.exit(1);
 });

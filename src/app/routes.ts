@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
+import allRoutes from "../routes/";
 import { globalErrorHandler, notFoundErrorHandler } from "./error.handler";
-import allRoutes from "../routes/index";
 const router: Router = Router();
 
 router.get("/", (_req: Request, res: Response) => {

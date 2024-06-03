@@ -1,13 +1,40 @@
 import httpStatus from "http-status";
 import mongoose, { isValidObjectId } from "mongoose";
-import { customError } from "../../utils";
+import QueryBuilder from "../../builder/QueryBuilder";
+import AppError from "../../errors/AppError";
 import User from "../user/user.model";
+import { studentSearchableFields } from "./student.constant";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
 
-const getAll = () => {
-  return Student.find({})
-    .select("-password")
+const getAll = (query: Record<string, unknown>) => {
+  /* const queryObj = { ...query };
+
+  const studentSearchableFields = [
+    "email",
+    "name.firstName",
+    "name.middleName",
+    "presentAddress",
+  ];
+  let searchTerm: string = "";
+
+  if (query.searchTerm) {
+    searchTerm = query?.searchTerm as string;
+  }
+
+  const searchQuery = Student.find({
+    $or: studentSearchableFields.map((field) => ({
+      [field]: { $regex: searchTerm, $options: "i" },
+    })),
+  });
+
+  // filtering
+  const excludeFields = ["searchTerm", "sort", "limit", "page", "fields"];
+  excludeFields.forEach((item) => delete queryObj[item]);
+  console.log({ query }, { queryObj });
+
+  const filterQuery = searchQuery
+    .find(queryObj)
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -15,12 +42,68 @@ const getAll = () => {
         path: "academicFaculty",
       },
     });
+
+  let sort = "-createdAt";
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  const sortQuery = filterQuery.sort(sort);
+
+  let page = 1;
+  let limit = 5;
+  let skip = 0;
+
+  if (query.limit) {
+    limit = parseInt(query.limit as string);
+  }
+
+  if (query.page) {
+    page = parseInt(query.page as string);
+    skip = (page - 1) * limit;
+  }
+
+  const paginateQuery = sortQuery.skip(skip);
+
+  const limitQuery = paginateQuery.limit(limit);
+
+  // field limiting
+  let fields = "-__v";
+
+  // fields: 'name,email';
+  // fields: 'name email';
+
+  if (query.fields) {
+    fields = (query.fields as string).split(",").join(" ");
+  }
+
+  const fieldsQuery = limitQuery.select(fields);
+  return fieldsQuery; */
+
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate("admissionSemester")
+      .populate({
+        path: "academicDepartment",
+        populate: {
+          path: "academicFaculty",
+        },
+      }),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  return studentQuery.modelQuery;
 };
 
 const findByProperty = (key: string, value: string) => {
   if (key === "_id") {
     if (!isValidObjectId(value)) {
-      throw customError(false, httpStatus.BAD_REQUEST, "Invalid productId");
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid productId");
     }
     return Student.findById(value)
       .populate("admissionSemester")
@@ -45,7 +128,7 @@ const findByProperty = (key: string, value: string) => {
 // update student
 const updateSingle = async (id: string, payload: IStudent) => {
   if (!(await Student.isStudentExists("id", id))) {
-    throw customError(false, httpStatus.NOT_FOUND, "student not found");
+    throw new AppError(httpStatus.NOT_FOUND, "student not found");
   }
 
   // destructure the non-primitive data
@@ -85,7 +168,7 @@ const updateSingle = async (id: string, payload: IStudent) => {
 // delete soft single student
 const deleteSingle = async (id: string) => {
   if (!(await Student.isStudentExists("id", id))) {
-    throw customError(false, httpStatus.NOT_FOUND, "student not found");
+    throw new AppError(httpStatus.NOT_FOUND, "student not found");
   }
 
   const session = await mongoose.startSession();
@@ -101,11 +184,7 @@ const deleteSingle = async (id: string) => {
     );
 
     if (!deletedStudent) {
-      throw customError(
-        false,
-        httpStatus.BAD_REQUEST,
-        "Failed to delete student",
-      );
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student");
     }
 
     // transaction-2
@@ -116,7 +195,7 @@ const deleteSingle = async (id: string) => {
     );
 
     if (!deletedUser) {
-      throw customError(false, httpStatus.BAD_REQUEST, "Failed to delete user");
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete user");
     }
 
     // commit transaction and end session
@@ -128,11 +207,7 @@ const deleteSingle = async (id: string) => {
     // about transaction and end session
     await session.abortTransaction();
     await session.endSession();
-    throw customError(
-      false,
-      httpStatus.BAD_REQUEST,
-      "Failed to delete student",
-    );
+    throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student");
   }
 };
 
