@@ -17,7 +17,7 @@ const getSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const student: IStudent | null = await studentService.findByProperty(
-    "id",
+    "_id",
     id,
   );
 

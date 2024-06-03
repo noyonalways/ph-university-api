@@ -103,7 +103,7 @@ const getAll = (query: Record<string, unknown>) => {
 const findByProperty = (key: string, value: string) => {
   if (key === "_id") {
     if (!isValidObjectId(value)) {
-      throw new AppError(httpStatus.BAD_REQUEST, "Invalid productId");
+      throw new AppError(httpStatus.BAD_REQUEST, "Invalid objectId");
     }
     return Student.findById(value)
       .populate("admissionSemester")
@@ -127,7 +127,7 @@ const findByProperty = (key: string, value: string) => {
 
 // update student
 const updateSingle = async (id: string, payload: IStudent) => {
-  if (!(await Student.isStudentExists("id", id))) {
+  if (!(await findByProperty("_id", id))) {
     throw new AppError(httpStatus.NOT_FOUND, "student not found");
   }
 
@@ -157,7 +157,7 @@ const updateSingle = async (id: string, payload: IStudent) => {
     }
   }
 
-  const result = Student.findOneAndUpdate({ id }, modifiedObj, {
+  const result = Student.findByIdAndUpdate(id, modifiedObj, {
     new: true,
     runValidators: true,
   });
@@ -167,7 +167,7 @@ const updateSingle = async (id: string, payload: IStudent) => {
 
 // delete soft single student
 const deleteSingle = async (id: string) => {
-  if (!(await Student.isStudentExists("id", id))) {
+  if (!(await findByProperty("_id", id))) {
     throw new AppError(httpStatus.NOT_FOUND, "student not found");
   }
 
@@ -177,8 +177,8 @@ const deleteSingle = async (id: string) => {
     session.startTransaction();
 
     // transaction-1
-    const deletedStudent = await Student.findOneAndUpdate(
-      { id },
+    const deletedStudent = await Student.findByIdAndUpdate(
+      id,
       { isDeleted: true },
       { new: true, session },
     );
@@ -189,7 +189,7 @@ const deleteSingle = async (id: string) => {
 
     // transaction-2
     const deletedUser = await User.findOneAndUpdate(
-      { id },
+      deletedStudent.user,
       { isDeleted: true },
       { new: true, session },
     );
