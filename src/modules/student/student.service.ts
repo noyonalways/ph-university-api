@@ -5,7 +5,7 @@ import User from "../user/user.model";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
 
-const getAll = async (query: Record<string, unknown>) => {
+const getAll = (query: Record<string, unknown>) => {
   const queryObj = { ...query };
 
   const studentSearchableFields = [
@@ -27,12 +27,12 @@ const getAll = async (query: Record<string, unknown>) => {
   });
 
   // filtering
-  const excludeFields = ["searchTerm", "sort", "limit"];
+  const excludeFields = ["searchTerm", "sort", "limit", "page", "fields"];
   excludeFields.forEach((item) => delete queryObj[item]);
+  console.log({ query }, { queryObj });
 
   const filterQuery = searchQuery
     .find(queryObj)
-    .select("-password")
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -48,15 +48,35 @@ const getAll = async (query: Record<string, unknown>) => {
 
   const sortQuery = filterQuery.sort(sort);
 
-  let limit = 1;
+  let page = 1;
+  let limit = 5;
+  let skip = 0;
 
   if (query.limit) {
     limit = parseInt(query.limit as string);
   }
 
-  const limitQuery = await sortQuery.limit(limit);
+  if (query.page) {
+    page = parseInt(query.page as string);
+    skip = (page - 1) * limit;
+  }
 
-  return limitQuery;
+  const paginateQuery = sortQuery.skip(skip);
+
+  const limitQuery = paginateQuery.limit(limit);
+
+  // field limiting
+  let fields = "-__v";
+
+  // fields: 'name,email';
+  // fields: 'name email';
+
+  if (query.fields) {
+    fields = (query.fields as string).split(",").join(" ");
+  }
+
+  const fieldsQuery = limitQuery.select(fields);
+  return fieldsQuery;
 };
 
 const findByProperty = (key: string, value: string) => {
