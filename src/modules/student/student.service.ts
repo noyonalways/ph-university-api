@@ -1,12 +1,14 @@
 import httpStatus from "http-status";
 import mongoose, { isValidObjectId } from "mongoose";
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import User from "../user/user.model";
+import { studentSearchableFields } from "./student.constant";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
 
 const getAll = (query: Record<string, unknown>) => {
-  const queryObj = { ...query };
+  /* const queryObj = { ...query };
 
   const studentSearchableFields = [
     "email",
@@ -76,7 +78,26 @@ const getAll = (query: Record<string, unknown>) => {
   }
 
   const fieldsQuery = limitQuery.select(fields);
-  return fieldsQuery;
+  return fieldsQuery; */
+
+  const studentQuery = new QueryBuilder(
+    Student.find()
+      .populate("admissionSemester")
+      .populate({
+        path: "academicDepartment",
+        populate: {
+          path: "academicFaculty",
+        },
+      }),
+    query,
+  )
+    .search(studentSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  return studentQuery.modelQuery;
 };
 
 const findByProperty = (key: string, value: string) => {

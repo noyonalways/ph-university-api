@@ -184,7 +184,10 @@ studentSchema.statics.isStudentExists = function (key: string, value: string) {
 // mongoose virtual method create
 // in options object we can pass virtuals:true to get virtual properties in json
 studentSchema.virtual("fullName").get(function () {
-  return `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`;
+  return (
+    this.name &&
+    `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`
+  );
 });
 
 const Student = model<IStudent, IStudentModel>("Student", studentSchema);
