@@ -1,28 +1,29 @@
 import { catchAsync, sendResponse } from "../../utils";
-import { IStudent } from "./student.interface";
-import studentService from "./student.service";
+import adminService from "./admin.service";
 
+// get all faculties
 const getAll = catchAsync(async (req, res) => {
-  const students: IStudent[] = await studentService.getAll(req.query);
+  const admins = await adminService.getAll(req.query);
 
   return sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Student data retrieved successfully",
-    data: students,
+    message: "Admin data retrieved successfully",
+    data: admins,
   });
 });
 
+// get single admin
 const getSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const student = await studentService.findByProperty("_id", id);
+  const admin = await adminService.findByProperty("_id", id);
 
-  if (!student) {
+  if (!admin) {
     return sendResponse(res, {
       statusCode: 404,
       success: false,
-      message: "Student not found",
+      message: "Admin not found",
       data: undefined,
     });
   }
@@ -30,34 +31,34 @@ const getSingle = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Student data retrieved successfully",
-    data: student,
+    message: "Admin data retrieved successfully",
+    data: admin,
   });
 });
 
-// update student
+// update admin
 const updateSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { student } = req.body;
+  const { admin } = req.body;
 
-  const result = await studentService.updateSingle(id, student);
+  const result = await adminService.updateSingle(id, admin);
   return sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Student updated successfully",
+    message: "Admin updated successfully",
     data: result,
   });
 });
 
-// delete student
+// delete admin
 const deleteSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await studentService.deleteSingle(id);
+  const result = await adminService.deleteSingle(id);
   return sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: "Student deleted successfully",
+    message: "Admin deleted successfully",
     data: result,
   });
 });

@@ -1,18 +1,11 @@
 // import studentSchema from "../student/student.validation";
-import userService from "../user/user.service";
 import { catchAsync, sendResponse } from "../../utils";
+import userService from "../user/user.service";
 
-const create = catchAsync(async (req, res) => {
+const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
-  // const { data, error } = studentSchema.safeParse(studentData);
-  // if (error) {
-  //   return res.status(400).json({
-  //     status: false,
-  //     message: error.issues[0].message,
-  //   });
-  // }
 
-  const result = await userService.create(password, studentData);
+  const result = await userService.createStudent(password, studentData);
   sendResponse(res, {
     statusCode: 201,
     success: true,
@@ -21,6 +14,32 @@ const create = catchAsync(async (req, res) => {
   });
 });
 
+const createFaculty = catchAsync(async (req, res) => {
+  const { password, faculty } = req.body;
+
+  const result = await userService.createFaculty(password, faculty);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Faculty created successfully",
+    data: result,
+  });
+});
+
+const createAdmin = catchAsync(async (req, res) => {
+  const { password, admin } = req.body;
+
+  const result = await userService.createAdmin(password, admin);
+  sendResponse(res, {
+    statusCode: 201,
+    success: true,
+    message: "Admin created successfully",
+    data: result,
+  });
+});
+
 export default {
-  create,
+  createStudent,
+  createFaculty,
+  createAdmin,
 };

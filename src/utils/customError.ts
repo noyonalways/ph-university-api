@@ -1,4 +1,8 @@
-import { TCustomError } from "../types";
+type TCustomError = {
+  success?: boolean;
+  status?: number;
+  message: string;
+};
 
 export function customError(
   success: boolean = false,
