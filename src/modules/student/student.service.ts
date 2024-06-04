@@ -132,7 +132,7 @@ const updateSingle = async (id: string, payload: IStudent) => {
   }
 
   // destructure the non-primitive data
-  const { name, guardian, localGuardian, ...remainingData } = payload;
+  const { name, guardian, localGuardian, ...remainingData } = payload || {};
 
   const modifiedObj: Record<string, unknown> = {
     ...remainingData,
@@ -188,7 +188,7 @@ const deleteSingle = async (id: string) => {
     }
 
     // transaction-2
-    const deletedUser = await User.findOneAndUpdate(
+    const deletedUser = await User.findByIdAndUpdate(
       deletedStudent.user,
       { isDeleted: true },
       { new: true, session },

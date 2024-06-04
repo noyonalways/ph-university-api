@@ -28,77 +28,86 @@ const userNameSchema = new Schema<TUserName>({
   },
 });
 
-const facultySchema = new Schema<TFaculty, IFacultyModel>({
-  id: {
-    type: String,
-    required: true,
-  },
-  user: {
-    type: Schema.Types.ObjectId,
-    required: [true, "User id is required"],
-    unique: true,
-    ref: "User",
-  },
-  designation: {
-    type: String,
-    required: [true, "Designation is required"],
-  },
-  name: {
-    type: userNameSchema,
-    required: [true, "Name is required"],
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: Gender,
-      message: "{VALUE} is not a valid gender",
+const facultySchema = new Schema<TFaculty, IFacultyModel>(
+  {
+    id: {
+      type: String,
+      required: true,
     },
-    required: true,
-  },
-  dateOfBirth: {
-    type: Date,
-  },
-  email: {
-    type: String,
-    required: [true, "Email is required"],
-    unique: true,
-  },
-  contactNo: {
-    type: String,
-    required: [true, "Contact No is required"],
-  },
-  emergencyContactNo: {
-    type: String,
-    required: [true, "Emergency Contact No is required"],
-  },
-  bloodGroup: {
-    type: String,
-    enum: {
-      values: BloodGroups,
-      message: "{VALUE} is not a valid blood group",
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, "User id is required"],
+      unique: true,
+      ref: "User",
+    },
+    designation: {
+      type: String,
+      required: [true, "Designation is required"],
+    },
+    name: {
+      type: userNameSchema,
+      required: [true, "Name is required"],
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: Gender,
+        message: "{VALUE} is not a valid gender",
+      },
+      required: true,
+    },
+    dateOfBirth: {
+      type: Date,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      lowercase: true,
+      unique: true,
+    },
+    contactNo: {
+      type: String,
+      required: [true, "Contact No is required"],
+    },
+    emergencyContactNo: {
+      type: String,
+      required: [true, "Emergency Contact No is required"],
+    },
+    bloodGroup: {
+      type: String,
+      enum: {
+        values: BloodGroups,
+        message: "{VALUE} is not a valid blood group",
+      },
+    },
+    presentAddress: {
+      type: String,
+      required: [true, "Present address is required"],
+    },
+    permanentAddress: {
+      type: String,
+      required: [true, "Permanent address is required"],
+    },
+    profileImage: {
+      type: String,
+    },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: "AcademicDepartment",
+      required: true,
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
-  presentAddress: {
-    type: String,
-    required: [true, "Present address is required"],
+  {
+    timestamps: true,
+    toJSON: {
+      virtuals: true,
+    },
   },
-  permanentAddress: {
-    type: String,
-    required: [true, "Permanent address is required"],
-  },
-  profileImage: {
-    type: String,
-  },
-  academicDepartment: {
-    type: Schema.Types.ObjectId,
-    ref: "AcademicDepartment",
-    required: true,
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
 // filter out deleted documents
 facultySchema.pre("find", function (next) {
@@ -122,6 +131,13 @@ facultySchema.statics.isFacultyExists = async function (
 ) {
   return await Faculty.findOne({ [key]: value });
 };
+
+facultySchema.virtual("fullName").get(function () {
+  return (
+    this.name &&
+    `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`
+  );
+});
 
 const Faculty = model<TFaculty, IFacultyModel>("Faculty", facultySchema);
 export default Faculty;

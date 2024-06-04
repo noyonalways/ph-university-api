@@ -51,48 +51,50 @@ const createLocalGuardianValidationSchema = z.object({
 
 // Define the Zod schema for IStudent
 const createStudentValidationSchema = z.object({
-  body: z.object({
-    password: z
-      .string({
-        invalid_type_error: "password must be string",
-      })
-      .min(8, { message: "password must be at least 8 characters" })
-      .max(20, { message: "password can not be more than 20 characters" })
-      .optional(),
-    student: z.object({
-      name: createUserNameValidationSchema,
-      gender: z.enum(["male", "female", "other"]),
-      dateOfBirth: z.string().optional(),
-      email: z
-        .string({ message: "email is required" })
-        .email({ message: "provide a valid email address" }),
-      contactNo: z.string(),
-      emergencyContactNo: z.string(),
-      bloodGroup: z
-        .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-        .optional(),
-      presentAddress: z.string(),
-      permanentAddress: z.string(),
-      guardian: createGuardianValidationSchema,
-      localGuardian: createLocalGuardianValidationSchema,
-      profileImage: z
-        .string()
-        .url({ message: "profileImage must be a valid image url" })
-        .optional(),
-      admissionSemester: z
+  body: z
+    .object({
+      password: z
         .string({
-          invalid_type_error: "admission semester must be string",
-          required_error: "admission semester id is required",
+          invalid_type_error: "password must be string",
         })
-        .min(10, "admission semester must be at least 10 characters"),
-      academicDepartment: z
-        .string({
-          invalid_type_error: "academic department must be string",
-          required_error: "academic department id is required",
-        })
-        .min(10, "academic department must be at least 10 characters"),
-    }),
-  }),
+        .min(8, { message: "password must be at least 8 characters" })
+        .max(20, { message: "password can not be more than 20 characters" })
+        .optional(),
+      student: z.object({
+        name: createUserNameValidationSchema,
+        gender: z.enum(["male", "female", "other"]),
+        dateOfBirth: z.string().optional(),
+        email: z
+          .string({ message: "email is required" })
+          .email({ message: "provide a valid email address" }),
+        contactNo: z.string(),
+        emergencyContactNo: z.string(),
+        bloodGroup: z
+          .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+          .optional(),
+        presentAddress: z.string(),
+        permanentAddress: z.string(),
+        guardian: createGuardianValidationSchema,
+        localGuardian: createLocalGuardianValidationSchema,
+        profileImage: z
+          .string()
+          .url({ message: "profileImage must be a valid image url" })
+          .optional(),
+        admissionSemester: z
+          .string({
+            invalid_type_error: "admission semester must be string",
+            required_error: "admission semester id is required",
+          })
+          .min(10, "admission semester must be at least 10 characters"),
+        academicDepartment: z
+          .string({
+            invalid_type_error: "academic department must be string",
+            required_error: "academic department id is required",
+          })
+          .min(10, "academic department must be at least 10 characters"),
+      }),
+    })
+    .strict(),
 });
 
 const updateUserNameValidationSchema = z.object({
@@ -126,44 +128,46 @@ const updateLocalGuardianValidationSchema = z.object({
 });
 
 const updateStudentValidationSchema = z.object({
-  body: z.object({
-    student: z
-      .object({
-        name: updateUserNameValidationSchema.optional(),
-        gender: z.enum(["male", "female", "other"]).optional(),
-        dateOfBirth: z.string().optional(),
-        email: z
-          .string()
-          .email({ message: "provide a valid email address" })
-          .optional(),
-        contactNo: z.string().optional(),
-        emergencyContactNo: z.string().optional(),
-        bloodGroup: z
-          .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-          .optional(),
-        presentAddress: z.string().optional(),
-        permanentAddress: z.string().optional(),
-        guardian: updateGuardianValidationSchema.optional(),
-        localGuardian: updateLocalGuardianValidationSchema.optional(),
-        profileImage: z
-          .string()
-          .url({ message: "profileImage must be a valid image url" })
-          .optional(),
-        admissionSemester: z
-          .string({
-            invalid_type_error: "admission semester must be string",
-          })
-          .min(10, "admission semester must be at least 10 characters")
-          .optional(),
-        academicDepartment: z
-          .string({
-            invalid_type_error: "academic department must be string",
-          })
-          .min(10, "academic department must be at least 10 characters")
-          .optional(),
-      })
-      .optional(),
-  }),
+  body: z
+    .object({
+      student: z
+        .object({
+          name: updateUserNameValidationSchema.optional(),
+          gender: z.enum(["male", "female", "other"]).optional(),
+          dateOfBirth: z.string().optional(),
+          email: z
+            .string()
+            .email({ message: "provide a valid email address" })
+            .optional(),
+          contactNo: z.string().optional(),
+          emergencyContactNo: z.string().optional(),
+          bloodGroup: z
+            .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+            .optional(),
+          presentAddress: z.string().optional(),
+          permanentAddress: z.string().optional(),
+          guardian: updateGuardianValidationSchema.optional(),
+          localGuardian: updateLocalGuardianValidationSchema.optional(),
+          profileImage: z
+            .string()
+            .url({ message: "profileImage must be a valid image url" })
+            .optional(),
+          admissionSemester: z
+            .string({
+              invalid_type_error: "admission semester must be string",
+            })
+            .min(10, "admission semester must be at least 10 characters")
+            .optional(),
+          academicDepartment: z
+            .string({
+              invalid_type_error: "academic department must be string",
+            })
+            .min(10, "academic department must be at least 10 characters")
+            .optional(),
+        })
+        .optional(),
+    })
+    .strict(),
 });
 
 export { createStudentValidationSchema, updateStudentValidationSchema };
