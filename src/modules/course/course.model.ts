@@ -35,7 +35,6 @@ const courseSchema = new Schema<TCourse>({
     type: Number,
     required: [true, "credits is required"],
     min: 1,
-    max: 3,
   },
   isDeleted: {
     type: Boolean,
