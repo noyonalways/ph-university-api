@@ -3,8 +3,8 @@ import mongoose, { isValidObjectId } from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { CourseSearchableFields } from "./course.constant";
-import { TCourse } from "./course.interface";
-import Course from "./course.model";
+import { TCourse, TCourseFaculty } from "./course.interface";
+import { Course, CourseFaculty } from "./course.model";
 
 const create = (payload: TCourse) => {
   return Course.create(payload);
@@ -165,10 +165,44 @@ const deleteSingle = async (id: string) => {
   return deleted;
 };
 
+const assignFacultiesWithCourse = async (
+  courseId: string,
+  payload: TCourseFaculty,
+) => {
+  const result = await CourseFaculty.findByIdAndUpdate(
+    courseId,
+    {
+      course: courseId,
+      $addToSet: { faculties: { $each: payload } },
+    },
+    { upsert: true, new: true },
+  );
+
+  return result;
+};
+
+const removeFacultiesFromCourse = async (
+  courseId: string,
+  payload: TCourseFaculty,
+) => {
+  const result = await CourseFaculty.findByIdAndUpdate(
+    courseId,
+    {
+      course: courseId,
+      $pull: { faculties: { $in: payload } },
+    },
+    { new: true },
+  );
+
+  return result;
+};
+
 export default {
   create,
   getAll,
   findByProperty,
   updateSingle,
   deleteSingle,
+  assignFacultiesWithCourse,
+  removeFacultiesFromCourse,
 };

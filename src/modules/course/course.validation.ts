@@ -12,7 +12,7 @@ const preRequisiteCoursesSchema = z.object({
     }),
 });
 
-const createCourseValidationSchema = z.object({
+export const createCourseValidationSchema = z.object({
   body: z
     .object({
       title: z
@@ -44,7 +44,7 @@ const createCourseValidationSchema = z.object({
     .strict(),
 });
 
-const updateCourseValidationSchema = z.object({
+export const updateCourseValidationSchema = z.object({
   body: z
     .object({
       title: z
@@ -80,4 +80,17 @@ const updateCourseValidationSchema = z.object({
     .strict(),
 });
 
-export { createCourseValidationSchema, updateCourseValidationSchema };
+export const courseFacultyValidationSchema = z.object({
+  body: z.object({
+    faculties: z.array(
+      z
+        .string({
+          required_error: "faculty id is required",
+          invalid_type_error: "faculty id must be string",
+        })
+        .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+          message: "Invalid faculty ID",
+        }),
+    ),
+  }),
+});

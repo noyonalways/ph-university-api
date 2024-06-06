@@ -2,6 +2,7 @@ import { Router } from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import courseController from "./course.controller";
 import {
+  courseFacultyValidationSchema,
   createCourseValidationSchema,
   updateCourseValidationSchema,
 } from "./course.validation";
@@ -21,5 +22,18 @@ router
     courseController.updateSingle,
   )
   .delete(courseController.deleteSingle);
+
+// assign faculties to the course
+router.put(
+  "/:courseId/assign-faculties",
+  validateRequest(courseFacultyValidationSchema),
+  courseController.assignFacultiesWithCourse,
+);
+
+router.delete(
+  "/:courseId/remove-faculties",
+  validateRequest(courseFacultyValidationSchema),
+  courseController.removeFacultiesFromCourse,
+);
 
 export default router;
