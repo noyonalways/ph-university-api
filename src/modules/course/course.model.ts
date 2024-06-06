@@ -44,8 +44,10 @@ const courseSchema = new Schema<TCourse>({
   },
   preRequisiteCourses: {
     type: [preRequisiteCourses],
+    _id: false,
   },
 });
+// TODO: remove the _id: false from 'preRequisiteCourses'
 
 // filter out deleted documents
 courseSchema.pre("find", function (next) {

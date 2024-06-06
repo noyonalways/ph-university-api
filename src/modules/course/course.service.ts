@@ -1,5 +1,5 @@
 import httpStatus from "http-status";
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { CourseSearchableFields } from "./course.constant";
@@ -36,13 +36,124 @@ const findByProperty = (key: string, value: string) => {
   }
 };
 
-const updateSingle = async (id: string, payload: TCourse) => {
-  const { preRequisiteCourses, ...remainingCourseData } = payload;
+const updateSingle = async (id: string, payload: Partial<TCourse>) => {
+  if (!(await findByProperty("_id", id))) {
+    throw new AppError(httpStatus.NOT_FOUND, "course not found");
+  }
 
-  return;
+  const { preRequisiteCourses, ...courseRemainingData } = payload;
+
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    // Step 1: Basic course info update
+    const updatedBasicCourseInfo = await Course.findByIdAndUpdate(
+      id,
+      courseRemainingData,
+      {
+        new: true,
+        runValidators: true,
+        session,
+      },
+    );
+
+    if (!updatedBasicCourseInfo) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to update course!");
+    }
+
+    // Step 2: Check if there are any prerequisite courses to update
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      // Filter out the deleted fields
+      const deletedPreRequisites = preRequisiteCourses
+        .filter((el) => el.course && el.isDeleted)
+        .map((el) => el.course);
+
+      const deletedPreRequisiteCourses = await Course.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            preRequisiteCourses: { course: { $in: deletedPreRequisites } },
+          },
+        },
+        {
+          new: true,
+          runValidators: true,
+          session,
+        },
+      );
+
+      if (!deletedPreRequisiteCourses) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Failed to update course!");
+      }
+
+      // Filter out the new course fields
+      const newPreRequisites = preRequisiteCourses.filter(
+        (el) => el.course && !el.isDeleted,
+      );
+
+      // Step 3: Check if the new prerequisite courses exist
+      const newPreRequisiteCourseIds = newPreRequisites.map((el) => el.course);
+      const existingCourses = await Course.find({
+        _id: { $in: newPreRequisiteCourseIds },
+      }).session(session);
+
+      const existingCourseIds = new Set(
+        existingCourses.map((course) => course._id.toString()),
+      );
+
+      // Check if all new prerequisite courses exist
+      newPreRequisiteCourseIds.forEach((courseId) => {
+        if (!existingCourseIds.has(courseId.toString())) {
+          throw new AppError(
+            httpStatus.NOT_FOUND,
+            `Course with id ${courseId} not found`,
+          );
+        }
+      });
+
+      // Add valid new prerequisite courses
+      const newPreRequisiteCourses = await Course.findByIdAndUpdate(
+        id,
+        {
+          $addToSet: {
+            preRequisiteCourses: {
+              $each: newPreRequisites,
+            },
+          },
+        },
+        {
+          new: true,
+          runValidators: true,
+          session,
+        },
+      );
+
+      if (!newPreRequisiteCourses) {
+        throw new AppError(httpStatus.BAD_REQUEST, "Failed to update course!");
+      }
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    const result = await Course.findById(id).populate(
+      "preRequisiteCourses.course",
+    );
+
+    return result;
+  } catch (err) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw err;
+  }
 };
 
 const deleteSingle = async (id: string) => {
+  if (!isValidObjectId(id)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid objectId");
+  }
   const deleted = await Course.findByIdAndUpdate(
     id,
     { isDeleted: true },
@@ -58,6 +169,6 @@ export default {
   create,
   getAll,
   findByProperty,
-  // updateSingle,
+  updateSingle,
   deleteSingle,
 };

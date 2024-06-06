@@ -1,7 +1,10 @@
 import { Router } from "express";
 import validateRequest from "../../middlewares/validateRequest";
 import courseController from "./course.controller";
-import { createCourseValidationSchema } from "./course.validation";
+import {
+  createCourseValidationSchema,
+  updateCourseValidationSchema,
+} from "./course.validation";
 
 const router: Router = Router();
 
@@ -14,7 +17,7 @@ router
   .route("/:id")
   .get(courseController.getSingle)
   .patch(
-    validateRequest(createCourseValidationSchema),
+    validateRequest(updateCourseValidationSchema),
     courseController.updateSingle,
   )
   .delete(courseController.deleteSingle);
