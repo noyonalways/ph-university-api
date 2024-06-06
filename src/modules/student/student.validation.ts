@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { z } from "zod";
 
 // Function to check if the first letter is capitalized
@@ -85,13 +86,17 @@ const createStudentValidationSchema = z.object({
             invalid_type_error: "admission semester must be string",
             required_error: "admission semester id is required",
           })
-          .min(10, "admission semester must be at least 10 characters"),
+          .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+            message: "Invalid course ID",
+          }),
         academicDepartment: z
           .string({
             invalid_type_error: "academic department must be string",
             required_error: "academic department id is required",
           })
-          .min(10, "academic department must be at least 10 characters"),
+          .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+            message: "Invalid course ID",
+          }),
       }),
     })
     .strict(),
@@ -156,13 +161,17 @@ const updateStudentValidationSchema = z.object({
             .string({
               invalid_type_error: "admission semester must be string",
             })
-            .min(10, "admission semester must be at least 10 characters")
+            .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+              message: "Invalid course ID",
+            })
             .optional(),
           academicDepartment: z
             .string({
               invalid_type_error: "academic department must be string",
             })
-            .min(10, "academic department must be at least 10 characters")
+            .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+              message: "Invalid course ID",
+            })
             .optional(),
         })
         .optional(),
