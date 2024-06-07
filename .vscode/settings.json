@@ -14,5 +14,6 @@
     "Rahman",
     "tseslint",
     "virtuals"
-  ]
+  ],
+  "files.autoSave": "off"
 }
