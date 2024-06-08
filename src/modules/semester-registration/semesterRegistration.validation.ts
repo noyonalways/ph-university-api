@@ -11,9 +11,13 @@ export const createSemesterRegistrationValidationSchema = z
           .refine((val) => mongoose.Types.ObjectId.isValid(val), {
             message: "Invalid course ID",
           }),
-        status: z.enum([
-          ...(SemesterRegistrationStatus as [string, ...string[]]),
-        ]),
+        status: z.enum(
+          [...(SemesterRegistrationStatus as [string, ...string[]])],
+          {
+            required_error: "status is required",
+            invalid_type_error: "status must be string",
+          },
+        ),
         startDate: z
           .string({
             required_error: "start date is required",
