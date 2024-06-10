@@ -53,7 +53,7 @@ academicSemesterSchema.pre("save", async function (next) {
 });
 
 const AcademicSemester = model<TAcademicSemester>(
-  "AcademicSemester",
+  "Academic-Semester",
   academicSemesterSchema,
 );
 

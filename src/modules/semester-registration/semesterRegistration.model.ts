@@ -5,7 +5,7 @@ import { TSemesterRegistration } from "./semesterRegistration.interface";
 const semesterRegistrationSchema = new Schema<TSemesterRegistration>({
   academicSemester: {
     type: Schema.Types.ObjectId,
-    ref: "AcademicSemester",
+    ref: "Academic-Semester",
     unique: true,
     required: [true, "academic semester is required"],
   },

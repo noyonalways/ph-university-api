@@ -93,7 +93,7 @@ const facultySchema = new Schema<TFaculty, IFacultyModel>(
     },
     academicDepartment: {
       type: Schema.Types.ObjectId,
-      ref: "AcademicDepartment",
+      ref: "Academic-Department",
       required: true,
     },
     isDeleted: {
