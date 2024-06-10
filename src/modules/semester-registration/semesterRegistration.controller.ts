@@ -52,11 +52,26 @@ const getSingle = catchAsync(async (req, res) => {
 // update
 const updateSingle = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const result = await semesterRegistrationService.updateSingle(id, req.body);
+  const semesterRegistration = await semesterRegistrationService.updateSingle(
+    id,
+    req.body,
+  );
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Semester Registration updated successfully",
+    data: semesterRegistration,
+  });
+});
+
+// delete
+const deleteSingle = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await semesterRegistrationService.deleteSingle(id);
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Semester Registration delete successfully",
     data: result,
   });
 });
@@ -66,4 +81,5 @@ export default {
   getAll,
   getSingle,
   updateSingle,
+  deleteSingle,
 };

@@ -22,6 +22,7 @@ router
   .patch(
     validateRequest(updateSemesterRegistrationValidationSchema),
     semesterRegistrationController.updateSingle,
-  );
+  )
+  .delete(semesterRegistrationController.deleteSingle);
 
 export default router;
