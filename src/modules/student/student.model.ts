@@ -108,6 +108,7 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
     },
     contactNo: {
       type: String,
@@ -139,12 +140,12 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
     },
     admissionSemester: {
       type: Schema.Types.ObjectId,
-      ref: "AcademicSemester",
+      ref: "Academic-Semester",
       required: true,
     },
     academicDepartment: {
       type: Schema.Types.ObjectId,
-      ref: "AcademicDepartment",
+      ref: "Academic-Department",
     },
     isDeleted: {
       type: Boolean,

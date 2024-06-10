@@ -16,6 +16,9 @@
     </h3>
 </p>
 
+[![Lucid Chart][lucid-chart-shield]][lucid-chart-url]
+[![Notion Doc][notion-doc-shield]][notion-doc-url]
+
 ## Contact
 
 - Email: [noyonrahman2003@gmail.com](mailto:noyonrahman2003@gmail.com)
@@ -34,3 +37,7 @@
 [linkedin-url]: https://linkedin.com/in/noyonalways
 [vscode-shield]: https://img.shields.io/badge/-VS%20Code%20Theme-black.svg?style=round-square&logo=visualstudiocode&colorB=555
 [vscode-theme-url]: https://marketplace.visualstudio.com/items?itemName=noyonalways.codevibe-themes
+[lucid-chart-shield]: https://img.shields.io/badge/-Lucid%20Diagram-black.svg?style=round-square&logo=lucid&color=555&logoColor=f96b13
+[lucid-chart-url]: https://lucid.app/lucidchart/363476ce-0481-4107-bb33-d29849993a0b/edit?viewport_loc=-1050%2C302%2C1664%2C773%2C0_0&invitationId=inv_cf4a1c3b-d4bd-47e2-a23d-8fce15e48b7f
+[notion-doc-shield]: https://img.shields.io/badge/-Documentation-black.svg?style=round-square&logo=notion&color=555&logoColor=white
+[notion-doc-url]: https://noyonalways.notion.site/PH-University-Requirements-Analysis-96c8bbaadfb84f37adac1c3607538641?pvs=4
