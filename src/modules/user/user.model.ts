@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { Schema, model } from "mongoose";
 import config from "../../config";
-import { IUser } from "./user.interface";
+import { IUser, UserModel } from "./user.interface";
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, UserModel>(
   {
     id: {
       type: String,
@@ -50,11 +50,16 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// remove the password from the saved response
-userSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
-});
+userSchema.statics.isUserExistsByCustomId = function (id: string) {
+  return User.findOne({ id });
+};
 
-const User = model<IUser>("User", userSchema);
+userSchema.statics.isPasswordMatched = function (
+  plainTextPassword: string,
+  hashedPassword: string,
+) {
+  return bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+const User = model<IUser, UserModel>("User", userSchema);
 export default User;

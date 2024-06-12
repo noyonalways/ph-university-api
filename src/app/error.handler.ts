@@ -6,7 +6,7 @@ import handleCastError from "../errors/handleCastError";
 import handleDuplicateIdError from "../errors/handleDuplicateIdError";
 import handleValidationError from "../errors/handleValidationError";
 import handleZodError from "../errors/handleZodError";
-import { TErrorSources } from "../interface";
+import { TErrorSources } from "../interface/error";
 
 // not found error handler
 export const notFoundErrorHandler = (
