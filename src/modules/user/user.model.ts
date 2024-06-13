@@ -14,10 +14,14 @@ const userSchema = new Schema<IUser, UserModel>(
       type: String,
       required: [true, "password is required"],
       minlength: [8, "password must be at least 8 characters"],
+      select: 0,
     },
     needsPasswordChange: {
       type: Boolean,
       default: true,
+    },
+    passwordChangeAt: {
+      type: Date,
     },
     role: {
       type: String,
@@ -51,7 +55,7 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.statics.isUserExistsByCustomId = function (id: string) {
-  return User.findOne({ id });
+  return User.findOne({ id }).select("+password");
 };
 
 userSchema.statics.isPasswordMatched = function (
