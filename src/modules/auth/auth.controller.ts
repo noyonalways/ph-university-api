@@ -1,15 +1,22 @@
 import httpStatus from "http-status";
+import config from "../../config";
 import { catchAsync, sendResponse } from "../../utils";
 import authService from "./auth.service";
 
 const login = catchAsync(async (req, res) => {
-  const result = await authService.login(req.body);
+  const { accessToken, needsPasswordChange, refreshToken } =
+    await authService.login(req.body);
+
+  res.cookie("refreshToken", refreshToken, {
+    secure: config.NODE_ENV === "production",
+    httpOnly: true,
+  });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "User logged in successfully",
-    data: result,
+    data: { accessToken, needsPasswordChange },
   });
 });
 
