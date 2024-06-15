@@ -82,6 +82,7 @@ const getAll = (query: Record<string, unknown>) => {
 
   const studentQuery = new QueryBuilder(
     Student.find()
+      .populate("user") // todo: remove the user populate
       .populate("admissionSemester")
       .populate({
         path: "academicDepartment",

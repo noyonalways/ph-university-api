@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
 import { Schema, model } from "mongoose";
 import config from "../../config";
-import { IUser } from "./user.interface";
+import { IUser, UserModel } from "./user.interface";
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<IUser, UserModel>(
   {
     id: {
       type: String,
@@ -14,10 +14,14 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [true, "password is required"],
       minlength: [8, "password must be at least 8 characters"],
+      select: 0,
     },
     needsPasswordChange: {
       type: Boolean,
       default: true,
+    },
+    passwordChangeAt: {
+      type: Date,
     },
     role: {
       type: String,
@@ -50,11 +54,25 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// remove the password from the saved response
-userSchema.post("save", function (doc, next) {
-  doc.password = "";
-  next();
-});
+userSchema.statics.isUserExistsByCustomId = function (id: string) {
+  return User.findOne({ id }).select("+password");
+};
 
-const User = model<IUser>("User", userSchema);
+userSchema.statics.isPasswordMatched = function (
+  plainTextPassword: string,
+  hashedPassword: string,
+) {
+  return bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedTimestamp: Date,
+  jwtIssuedTimestamp: number,
+) {
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
+};
+
+const User = model<IUser, UserModel>("User", userSchema);
 export default User;

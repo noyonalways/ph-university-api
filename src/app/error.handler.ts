@@ -1,4 +1,5 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import { JsonWebTokenError } from "jsonwebtoken";
 import { ZodError } from "zod";
 import config from "../config";
 import AppError from "../errors/AppError";
@@ -6,7 +7,7 @@ import handleCastError from "../errors/handleCastError";
 import handleDuplicateIdError from "../errors/handleDuplicateIdError";
 import handleValidationError from "../errors/handleValidationError";
 import handleZodError from "../errors/handleZodError";
-import { TErrorSources } from "../interface";
+import { TErrorSources } from "../interface/error";
 
 // not found error handler
 export const notFoundErrorHandler = (
@@ -60,6 +61,15 @@ export const globalErrorHandler: ErrorRequestHandler = (
     errorSources = simplifiedError.errorSources;
   } else if (error instanceof AppError) {
     statusCode = error.statusCode;
+    message = error.message;
+    errorSources = [
+      {
+        path: "",
+        message: error.message,
+      },
+    ];
+  } else if (error instanceof JsonWebTokenError) {
+    statusCode = 401;
     message = error.message;
     errorSources = [
       {

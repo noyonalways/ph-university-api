@@ -1,4 +1,6 @@
 import { Router } from "express";
+import auth from "../../middlewares/auth";
+import { USER_ROLE } from "../user/user.constant";
 import validateRequest from "./../../middlewares/validateRequest";
 import semesterRegistrationController from "./semesterRegistration.controller";
 import {
@@ -11,18 +13,20 @@ const router: Router = Router();
 router
   .route("/")
   .post(
+    auth(USER_ROLE.admin),
     validateRequest(createSemesterRegistrationValidationSchema),
     semesterRegistrationController.create,
   )
-  .get(semesterRegistrationController.getAll);
+  .get(auth(USER_ROLE.admin), semesterRegistrationController.getAll);
 
 router
   .route("/:id")
-  .get(semesterRegistrationController.getSingle)
+  .get(auth(USER_ROLE.admin), semesterRegistrationController.getSingle)
   .patch(
+    auth(USER_ROLE.admin),
     validateRequest(updateSemesterRegistrationValidationSchema),
     semesterRegistrationController.updateSingle,
   )
-  .delete(semesterRegistrationController.deleteSingle);
+  .delete(auth(USER_ROLE.admin), semesterRegistrationController.deleteSingle);
 
 export default router;

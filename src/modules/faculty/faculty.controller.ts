@@ -3,13 +3,14 @@ import facultyService from "./faculty.service";
 
 // get all faculties
 const getAll = catchAsync(async (req, res) => {
-  const faculties = await facultyService.getAll(req.query);
+  // get all faculties
+  const allFaculties = await facultyService.getAll(req.query);
 
   return sendResponse(res, {
     statusCode: 200,
     success: true,
     message: "Faculty data retrieved successfully",
-    data: faculties,
+    data: allFaculties,
   });
 });
 

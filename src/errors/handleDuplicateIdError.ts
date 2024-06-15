@@ -1,5 +1,5 @@
 import { Error } from "mongoose";
-import { TErrorSources, TGenericErrorResponse } from "../interface";
+import { TErrorSources, TGenericErrorResponse } from "../interface/error";
 
 interface MongooseDuplicateKeyError extends Error {
   code: number;
