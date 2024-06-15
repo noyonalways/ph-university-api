@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import httpStatus from "http-status";
-import { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
 import config from "../../config";
 import AppError from "../../errors/AppError";
@@ -120,8 +120,61 @@ const changePassword = async (
   return null;
 };
 
+const refreshToken = async (refreshToken: string) => {
+  // if (!token) {
+  //   throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized Access");
+  // }
+
+  const decoded = jwt.verify(
+    refreshToken,
+    config.jwt_refresh_secret as string,
+  ) as JwtPayload;
+
+  const { userId, iat } = decoded;
+
+  // check the user is exist
+  const user = await User.isUserExistsByCustomId(userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // check the user is already deleted
+  const isDeleted = user?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(httpStatus.FORBIDDEN, "User is already deleted");
+  }
+
+  // check the is user status
+  const userStatus = user?.status;
+  if (userStatus === "blocked") {
+    throw new AppError(httpStatus.FORBIDDEN, "User is blocked");
+  }
+
+  if (
+    user.passwordChangeAt &&
+    User.isJWTIssuedBeforePasswordChanged(user.passwordChangeAt, iat as number)
+  ) {
+    throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized Access");
+  }
+
+  // generate jwt token
+  const jwtPayload = {
+    userId: user?.id,
+    role: user?.role,
+  };
+
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+
+  return { accessToken };
+};
+
 export default {
   login,
   findByProperty,
   changePassword,
+  refreshToken,
 };

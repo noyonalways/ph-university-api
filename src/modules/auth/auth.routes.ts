@@ -6,6 +6,7 @@ import authController from "./auth.controller";
 import {
   changePasswordValidationSchema,
   loginValidationSchema,
+  refreshTokenValidationSchema,
 } from "./auth.validation";
 const router: Router = Router();
 
@@ -19,6 +20,13 @@ router
     auth(USER_ROLE.admin, USER_ROLE.faculty, USER_ROLE.student),
     validateRequest(changePasswordValidationSchema),
     authController.changePassword,
+  );
+
+router
+  .route("/refresh-token")
+  .post(
+    validateRequest(refreshTokenValidationSchema),
+    authController.refreshToken,
   );
 
 export default router;
