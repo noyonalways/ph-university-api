@@ -70,7 +70,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
     ];
   } else if (error instanceof JsonWebTokenError) {
     statusCode = 401;
-    message = error.message;
+    message = error.name;
     errorSources = [
       {
         path: "",

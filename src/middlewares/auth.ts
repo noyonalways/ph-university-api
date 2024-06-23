@@ -8,13 +8,13 @@ import { catchAsync } from "../utils";
 
 const auth = (...requiredRoles: TUserRole[]) => {
   return catchAsync(async (req, _res, next) => {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized Access");
     }
 
     const decoded = jwt.verify(
-      token.split(" ")[1],
+      token,
       config.jwt_access_secret as string,
     ) as JwtPayload;
     const { role, userId, iat } = decoded;

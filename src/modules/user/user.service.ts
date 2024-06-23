@@ -50,6 +50,8 @@ const createStudent = async (password: string, payload: IStudent) => {
 
   // set student role
   userData.role = "student";
+  // set user email
+  userData.email = payload.email;
 
   const session = await mongoose.startSession();
 
@@ -110,6 +112,8 @@ const createFaculty = async (password: string, payload: TFaculty) => {
 
   // set student role
   userData.role = "faculty";
+  // set user email
+  userData.email = payload.email;
 
   const session = await mongoose.startSession();
 
@@ -161,6 +165,8 @@ const createAdmin = async (password: string, payload: TAdmin) => {
 
   // set student role
   userData.role = "admin";
+  // set user email
+  userData.email = payload.email;
 
   const session = await mongoose.startSession();
 

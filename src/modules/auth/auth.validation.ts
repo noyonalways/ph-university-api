@@ -46,3 +46,35 @@ export const refreshTokenValidationSchema = z.object({
     })
     .strict(),
 });
+
+export const forgetPasswordValidationSchema = z.object({
+  body: z
+    .object({
+      id: z
+        .string({
+          invalid_type_error: " id must be a string",
+          required_error: "user id is required",
+        })
+        .min(1, "provide a valid user id"),
+    })
+    .strict(),
+});
+
+export const resetPasswordValidationSchema = z.object({
+  body: z
+    .object({
+      id: z
+        .string({
+          invalid_type_error: "id must be a string",
+          required_error: "id is required",
+        })
+        .min(1, "provide a valid user id"),
+      newPassword: z
+        .string({
+          invalid_type_error: "new password must be a string",
+          required_error: "new password is required",
+        })
+        .min(8, "new password must be at least 8 characters"),
+    })
+    .strict(),
+});
