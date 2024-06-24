@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
-import mongoose from "mongoose";
+import { JwtPayload } from "jsonwebtoken";
+import mongoose, { isValidObjectId } from "mongoose";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 import academicDepartmentService from "../academic-department/academicDepartment.service";
@@ -205,8 +206,49 @@ const createAdmin = async (password: string, payload: TAdmin) => {
   }
 };
 
+const getMe = async (payload: JwtPayload) => {
+  const user = await User.isUserExistsByCustomId(payload.userId);
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  if (user.role === "admin") {
+    return Admin.findOne({ id: user.id }).populate("user");
+  }
+  if (user.role === "student") {
+    return Student.findOne({ id: user.id })
+      .populate("user")
+      .populate("admissionSemester")
+      .populate("academicDepartment");
+  }
+  if (user.role === "faculty") {
+    return Faculty.findOne({ id: user.id })
+      .populate("user")
+      .populate("academicDepartment");
+  }
+};
+
+// change status
+const changeStatus = async (id: string, payload: { status: string }) => {
+  if (!isValidObjectId(id)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid objectId");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!updatedUser) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
+  }
+  return updatedUser;
+};
+
 export default {
   createStudent,
   createFaculty,
   createAdmin,
+  getMe,
+  changeStatus,
 };

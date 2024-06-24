@@ -1,5 +1,8 @@
-import { Model } from "mongoose";
+import { Document, Model } from "mongoose";
 import { USER_ROLE } from "./user.constant";
+
+export type TUserRoles = keyof typeof USER_ROLE;
+export type TStatus = "in-progress" | "blocked";
 
 export interface IUser {
   id: string;
@@ -7,13 +10,13 @@ export interface IUser {
   password: string;
   needsPasswordChange: boolean;
   passwordChangeAt?: Date;
-  role: "admin" | "student" | "faculty";
-  status: "in-progress" | "blocked";
+  role: TUserRoles;
+  status: TStatus;
   isDeleted: boolean;
 }
 
 export interface UserModel extends Model<IUser> {
-  isUserExistsByCustomId(id: string): Promise<IUser>;
+  isUserExistsByCustomId(id: string): Promise<IUser & Document>;
   isPasswordMatched(
     plainTextPassword: string,
     hashedPassword: string,
@@ -23,5 +26,3 @@ export interface UserModel extends Model<IUser> {
     jwtIssuedTimestamp: number,
   ): boolean;
 }
-
-export type TUserRole = keyof typeof USER_ROLE;

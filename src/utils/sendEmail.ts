@@ -22,6 +22,7 @@ const sendEmail = async (to: string, html: string) => {
       html,
     });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.log(error);
   }
 };
