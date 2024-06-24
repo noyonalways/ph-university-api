@@ -6,8 +6,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: config.NODE_ENV === "production",
   auth: {
-    user: "noyonrahman2003@gmail.com",
-    pass: "bjhm gifa hrrq mxzv",
+    user: config.smtp_auth_user,
+    pass: config.smtp_auth_password,
   },
 });
 
@@ -15,7 +15,7 @@ const sendEmail = async (to: string, html: string) => {
   try {
     // send mail with defined transport object
     await transporter.sendMail({
-      from: "noyonrahman2003@gmail.com",
+      from: config.node_mailer_email_from,
       to, // list of receivers
       subject: `Reset Your Password within 10 minutes`,
       text: "Reset Your Password within 10 minutes",
