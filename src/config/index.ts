@@ -19,4 +19,7 @@ export default {
   smtp_auth_password: process.env.SMTP_AUTH_PASSWORD,
   smtp_auth_user: process.env.SMTP_AUTH_USER,
   node_mailer_email_from: process.env.NODE_MAILER_EMAIL_FROM,
+  cloudinary_name: process.env.CLOUDINARY_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
 };
