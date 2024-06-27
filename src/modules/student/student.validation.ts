@@ -61,43 +61,41 @@ const createStudentValidationSchema = z.object({
         .min(8, { message: "password must be at least 8 characters" })
         .max(20, { message: "password can not be more than 20 characters" })
         .optional(),
-      student: z.object({
-        name: createUserNameValidationSchema,
-        gender: z.enum(["male", "female", "other"]),
-        dateOfBirth: z.string().optional(),
-        email: z
-          .string({ message: "email is required" })
-          .email({ message: "provide a valid email address" }),
-        contactNo: z.string(),
-        emergencyContactNo: z.string(),
-        bloodGroup: z
-          .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
-          .optional(),
-        presentAddress: z.string(),
-        permanentAddress: z.string(),
-        guardian: createGuardianValidationSchema,
-        localGuardian: createLocalGuardianValidationSchema,
-        profileImage: z
-          .string()
-          .url({ message: "profileImage must be a valid image url" })
-          .optional(),
-        admissionSemester: z
-          .string({
-            invalid_type_error: "admission semester must be string",
-            required_error: "admission semester id is required",
-          })
-          .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-            message: "Invalid course ID",
-          }),
-        academicDepartment: z
-          .string({
-            invalid_type_error: "academic department must be string",
-            required_error: "academic department id is required",
-          })
-          .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-            message: "Invalid course ID",
-          }),
-      }),
+      student: z
+        .object({
+          name: createUserNameValidationSchema,
+          gender: z.enum(["male", "female", "other"]),
+          dateOfBirth: z.string().optional(),
+          email: z
+            .string({ message: "email is required" })
+            .email({ message: "provide a valid email address" }),
+          contactNo: z.string(),
+          emergencyContactNo: z.string(),
+          bloodGroup: z
+            .enum(["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"])
+            .optional(),
+          presentAddress: z.string(),
+          permanentAddress: z.string(),
+          guardian: createGuardianValidationSchema,
+          localGuardian: createLocalGuardianValidationSchema,
+          admissionSemester: z
+            .string({
+              invalid_type_error: "admission semester must be string",
+              required_error: "admission semester id is required",
+            })
+            .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+              message: "Invalid course ID",
+            }),
+          academicDepartment: z
+            .string({
+              invalid_type_error: "academic department must be string",
+              required_error: "academic department id is required",
+            })
+            .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+              message: "Invalid course ID",
+            }),
+        })
+        .strict(),
     })
     .strict(),
 });

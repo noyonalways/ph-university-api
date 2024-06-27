@@ -82,14 +82,10 @@ export const createAdminValidationSchema = z.object({
             bloodGroup: BloodGroup.optional(),
             presentAddress: z.string(),
             permanentAddress: z.string(),
-            profileImage: z
-              .string()
-              .url({ message: "profileImage must be a valid image url" })
-              .optional(),
           },
           {
-            invalid_type_error: "faculty must be object",
-            required_error: "faculty is required",
+            invalid_type_error: "admin must be object",
+            required_error: "admin is required",
           },
         )
         .strict(),
