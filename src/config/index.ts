@@ -13,4 +13,13 @@ export default {
   jwt_access_expires_in: process.env.JWT_ACCESS_EXPIRES_IN,
   jwt_refresh_secret: process.env.JWT_REFRESH_SECRET,
   jwt_refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN,
+  jwt_reset_password_secret: process.env.JWT_RESET_PASSWORD_SECRET,
+  jwt_reset_password_expires_in: process.env.JWT_RESET_PASSWORD_EXPIRES_IN,
+  ui_rest_password_domain: process.env.UI_RESET_PASSWORD_DOMAIN,
+  smtp_auth_password: process.env.SMTP_AUTH_PASSWORD,
+  smtp_auth_user: process.env.SMTP_AUTH_USER,
+  node_mailer_email_from: process.env.NODE_MAILER_EMAIL_FROM,
+  cloud_name: process.env.CLOUD_NAME,
+  cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
+  cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
 };

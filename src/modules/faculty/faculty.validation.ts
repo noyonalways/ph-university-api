@@ -69,10 +69,6 @@ export const createFacultyValidationSchema = z.object({
             .optional(),
           presentAddress: z.string(),
           permanentAddress: z.string(),
-          profileImage: z
-            .string()
-            .url({ message: "profileImage must be a valid image url" })
-            .optional(),
           academicDepartment: z
             .string({
               invalid_type_error: "academic department must be string",

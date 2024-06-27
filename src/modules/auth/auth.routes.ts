@@ -5,8 +5,10 @@ import validateRequest from "./../../middlewares/validateRequest";
 import authController from "./auth.controller";
 import {
   changePasswordValidationSchema,
+  forgetPasswordValidationSchema,
   loginValidationSchema,
   refreshTokenValidationSchema,
+  resetPasswordValidationSchema,
 } from "./auth.validation";
 const router: Router = Router();
 
@@ -27,6 +29,20 @@ router
   .post(
     validateRequest(refreshTokenValidationSchema),
     authController.refreshToken,
+  );
+
+router
+  .route("/forget-password")
+  .post(
+    validateRequest(forgetPasswordValidationSchema),
+    authController.forgotPassword,
+  );
+
+router
+  .route("/reset-password")
+  .post(
+    validateRequest(resetPasswordValidationSchema),
+    authController.resetPassword,
   );
 
 export default router;

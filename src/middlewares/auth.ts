@@ -2,19 +2,19 @@ import httpStatus from "http-status";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../config";
 import AppError from "../errors/AppError";
-import { TUserRole } from "../modules/user/user.interface";
+import { TUserRoles } from "../modules/user/user.interface";
 import User from "../modules/user/user.model";
 import { catchAsync } from "../utils";
 
-const auth = (...requiredRoles: TUserRole[]) => {
+const auth = (...requiredRoles: TUserRoles[]) => {
   return catchAsync(async (req, _res, next) => {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
       throw new AppError(httpStatus.UNAUTHORIZED, "Unauthorized Access");
     }
 
     const decoded = jwt.verify(
-      token.split(" ")[1],
+      token,
       config.jwt_access_secret as string,
     ) as JwtPayload;
     const { role, userId, iat } = decoded;

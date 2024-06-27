@@ -1,11 +1,18 @@
 import bcrypt from "bcrypt";
 import { Schema, model } from "mongoose";
 import config from "../../config";
+
+import { UserRoles, UserStatus } from "./user.constant";
 import { IUser, UserModel } from "./user.interface";
 
 const userSchema = new Schema<IUser, UserModel>(
   {
     id: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -26,14 +33,14 @@ const userSchema = new Schema<IUser, UserModel>(
     role: {
       type: String,
       enum: {
-        values: ["admin", "student", "faculty"],
+        values: UserRoles,
         message: "{VALUE} is not a valid role",
       },
     },
     status: {
       type: String,
       enum: {
-        values: ["in-progress", "blocked"],
+        values: UserStatus,
         message: "{VALUE} is not a valid status",
       },
       default: "in-progress",
