@@ -1,4 +1,5 @@
 import { isValidObjectId } from "mongoose";
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { academicSemesterNameCodeMapper } from "./academicSemester.constants";
 import { TAcademicSemester } from "./academicSemester.interface";
@@ -19,8 +20,16 @@ const create = (payload: TAcademicSemester) => {
 };
 
 // get all semester from db
-const getAll = () => {
-  return AcademicSemester.find({});
+const getAll = (query: Record<string, unknown>) => {
+  const academicSemesterQuery = new QueryBuilder(
+    AcademicSemester.find({}),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  return academicSemesterQuery.modelQuery;
 };
 
 // get semester by property

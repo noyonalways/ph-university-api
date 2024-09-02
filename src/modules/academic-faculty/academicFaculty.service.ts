@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import { isValidObjectId } from "mongoose";
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import { TAcademicFaculty } from "./academicFaculty.interface";
 import AcademicFaculty from "./academicFaculty.model";
@@ -15,8 +16,13 @@ const create = async (payload: TAcademicFaculty) => {
 };
 
 // get all academic facilities
-const getAll = () => {
-  return AcademicFaculty.find({});
+const getAll = (query: Record<string, unknown>) => {
+  const academicFacultyQuery = new QueryBuilder(AcademicFaculty.find({}), query)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  return academicFacultyQuery.modelQuery;
 };
 
 // find academic faculty by property

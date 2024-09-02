@@ -1,5 +1,6 @@
 import httpStatus from "http-status";
 import { isValidObjectId } from "mongoose";
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
 import academicFacultyService from "../academic-faculty/academicFaculty.service";
 import { TAcademicDepartment } from "./academicDepartment.interface";
@@ -20,8 +21,16 @@ const create = async (payload: TAcademicDepartment) => {
 };
 
 // get all academic departments
-const getAll = () => {
-  return AcademicDepartment.find({}).populate("academicFaculty");
+const getAll = (query: Record<string, unknown>) => {
+  const academicDepartmentQuery = new QueryBuilder(
+    AcademicDepartment.find({}).populate("academicFaculty"),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  return academicDepartmentQuery.modelQuery;
 };
 
 // find academic department by property
