@@ -7,7 +7,7 @@ import { studentSearchableFields } from "./student.constant";
 import { IStudent } from "./student.interface";
 import Student from "./student.model";
 
-const getAll = (query: Record<string, unknown>) => {
+const getAll = async (query: Record<string, unknown>) => {
   /* const queryObj = { ...query };
 
   const studentSearchableFields = [
@@ -98,7 +98,10 @@ const getAll = (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
-  return studentQuery.modelQuery;
+  const result = await studentQuery.modelQuery;
+  const meta = await studentQuery.countTotal();
+
+  return { meta, result };
 };
 
 const findByProperty = (key: string, value: string) => {

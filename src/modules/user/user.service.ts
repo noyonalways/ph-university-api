@@ -22,9 +22,9 @@ import {
 
 // create a new student
 const createStudent = async (
-  filePath: string,
   password: string,
   payload: IStudent,
+  filePath?: string,
 ) => {
   // check if the student has already been created with provide email
   if (await Student.isStudentExists("email", payload.email)) {
@@ -68,12 +68,19 @@ const createStudent = async (
     // set student id
     userData.id = await generateStudentId(admissionSemester);
 
-    // upload image to cloudinary
-    const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
-    const imageUploadResponse = await sendImageToCloudinary(
-      imgName,
-      filePath as string,
-    );
+    let imageUploadResponse;
+    if (!filePath) {
+      payload.profileImage = ""; // set image url from cloudinary response
+    } else {
+      // upload image to cloudinary
+      const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
+      imageUploadResponse = await sendImageToCloudinary(
+        imgName,
+        filePath as string,
+      );
+    }
+
+    // console.log(filePath);
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // built-in static method
@@ -83,7 +90,7 @@ const createStudent = async (
 
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImage = imageUploadResponse?.secure_url; // set image url from cloudinary response
+    payload.profileImage = imageUploadResponse?.secure_url || ""; // set image url from cloudinary response
 
     // create a student (transaction-2)
     const newStudent = await Student.create([payload], { session });

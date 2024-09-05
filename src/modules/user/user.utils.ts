@@ -1,6 +1,7 @@
 import { TAcademicSemester } from "../academic-semester/academicSemester.interface";
 import User from "./user.model";
 
+/* 
 const findLastStudentId = async () => {
   const lastStudent = await User.findOne(
     {
@@ -11,37 +12,38 @@ const findLastStudentId = async () => {
       _id: 0,
     },
   )
-    .sort({
-      createdAt: -1,
-    })
+    .sort({})
     .lean();
 
   return lastStudent?.id ? lastStudent.id : undefined;
-};
+}; */
 
 export const generateStudentId = async (payload: TAcademicSemester) => {
-  // first time 0000
-
-  let currentId = (0).toString(); // by default 0000
-
-  const lastStudentId = await findLastStudentId(); // 2030 01 0001
-
-  const lastStudentYear = lastStudentId?.substring(0, 4);
-  const lastStudentSemesterCode = lastStudentId?.substring(4, 6);
-  const currentYear = payload.year;
   const currentSemesterCode = payload.code;
+  const currentYear = payload.year;
 
-  if (
-    lastStudentId &&
-    lastStudentYear === currentYear &&
-    lastStudentSemesterCode === currentSemesterCode
-  ) {
-    currentId = lastStudentId.substring(6); // 0001
-  }
+  // Check for existing student IDs with the same semester code and year
+  const existingStudentIds = await User.find(
+    {
+      role: "student",
+      id: { $regex: `^${currentYear}${currentSemesterCode}` },
+    },
+    { id: 1, _id: 0 },
+  )
+    .sort({ createdAt: -1 })
+    .lean();
 
-  let incrementalId = (Number(currentId) + 1).toString().padStart(4, "0");
-  incrementalId = `${payload.year}${payload.code}${incrementalId}`;
-  return incrementalId;
+  const existingIds = existingStudentIds.map((student) => student.id);
+  const maxId =
+    existingIds.length > 0
+      ? Math.max(...existingIds.map((id) => parseInt(id.substring(6))))
+      : 0;
+
+  let incrementId = (maxId + 1).toString().padStart(4, "0");
+
+  incrementId = `${currentYear}${currentSemesterCode}${incrementId}`;
+
+  return incrementId;
 };
 
 // Faculty ID

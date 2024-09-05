@@ -103,6 +103,7 @@ const studentSchema = new Schema<IStudent, IStudentModel>(
     },
     dateOfBirth: {
       type: String,
+      required: [true, "date of birth is required"],
     },
     email: {
       type: String,
@@ -187,7 +188,7 @@ studentSchema.statics.isStudentExists = function (key: string, value: string) {
 studentSchema.virtual("fullName").get(function () {
   return (
     this.name &&
-    `${this?.name?.firstName} ${this?.name?.middleName} ${this?.name?.lastName}`
+    `${this?.name?.firstName} ${this?.name?.middleName || ""} ${this?.name?.lastName}`
   );
 });
 
