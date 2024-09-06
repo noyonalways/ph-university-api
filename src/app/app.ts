@@ -22,6 +22,7 @@ app.use(
       "https://phu.noyonrahman.xyz",
     ],
     credentials: true,
+    methods: "*",
   }),
 );
 app.use(express.urlencoded({ extended: true }));

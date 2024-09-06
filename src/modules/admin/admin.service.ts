@@ -8,7 +8,7 @@ import { TAdmin } from "./admin.interface";
 import Admin from "./admin.model";
 
 const getAll = (query: Record<string, unknown>) => {
-  const AdminQuery = new QueryBuilder(Admin.find(), query)
+  const AdminQuery = new QueryBuilder(Admin.find().populate("user"), query)
     .search(AdminSearchableFields)
     .filter()
     .sort()
@@ -23,7 +23,7 @@ const findByProperty = (key: string, value: string) => {
     if (!isValidObjectId(value)) {
       throw new AppError(httpStatus.BAD_REQUEST, "Invalid objectId");
     }
-    return Admin.findById(value);
+    return Admin.findById(value).populate("user");
   } else {
     return Admin.findOne({ [key]: value });
   }

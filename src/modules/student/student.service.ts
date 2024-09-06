@@ -116,7 +116,8 @@ const findByProperty = (key: string, value: string) => {
         populate: {
           path: "academicFaculty",
         },
-      });
+      })
+      .populate("user");
   } else {
     return Student.findOne({ [key]: value })
       .populate("admissionSemester")
