@@ -41,6 +41,7 @@ router.post(
 
 router.post(
   "/create-admin",
+  auth(USER_ROLE.admin),
   // multer will parse the file and form-data
   upload.single("file"),
   // parse the form-data text to json
