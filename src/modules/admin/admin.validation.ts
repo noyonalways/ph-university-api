@@ -25,10 +25,7 @@ const createUserNameValidationSchema = z.object(
       .max(20, "firstName can't be more than 20 characters")
       .transform(capitalize),
     // .refine(isCapitalized, { message: "firstName must be capitalized" })
-    middleName: z
-      .string()
-      .min(3, "middleName must be more 3 characters")
-      .optional(),
+    middleName: z.string().optional(),
     lastName: z
       .string()
       .max(20, "lastName can't be more than 20 characters")

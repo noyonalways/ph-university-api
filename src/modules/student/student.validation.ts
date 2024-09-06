@@ -22,7 +22,7 @@ const createUserNameValidationSchema = z.object(
   {
     firstName: z
       .string({ message: "firstName is required" })
-      .min(3, "firstName must be more than 3 characters")
+      .min(1, "firstName must be more than 1 characters")
       .max(20, "firstName can't be more than 20 characters")
       .transform(capitalize),
     // .refine(isCapitalized, { message: "firstName must be capitalized" })
@@ -65,7 +65,9 @@ const createStudentValidationSchema = z.object({
         .object({
           name: createUserNameValidationSchema,
           gender: z.enum(["male", "female", "other"]),
-          dateOfBirth: z.string().optional(),
+          dateOfBirth: z.string({
+            required_error: "date of birth is required",
+          }),
           email: z
             .string({ message: "email is required" })
             .email({ message: "provide a valid email address" }),
@@ -84,7 +86,7 @@ const createStudentValidationSchema = z.object({
               required_error: "admission semester id is required",
             })
             .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-              message: "Invalid course ID",
+              message: "Invalid admission semester ID",
             }),
           academicDepartment: z
             .string({
@@ -92,7 +94,7 @@ const createStudentValidationSchema = z.object({
               required_error: "academic department id is required",
             })
             .refine((val) => mongoose.Types.ObjectId.isValid(val), {
-              message: "Invalid course ID",
+              message: "Invalid academic department ID",
             }),
         })
         .strict(),

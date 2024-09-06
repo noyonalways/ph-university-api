@@ -22,10 +22,15 @@ import {
 
 // create a new student
 const createStudent = async (
-  filePath: string,
   password: string,
   payload: IStudent,
+  filePath?: string,
 ) => {
+  // check the admin already exists on the user collection
+  if (await User.findOne({ email: payload.email })) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
+  }
+
   // check if the student has already been created with provide email
   if (await Student.isStudentExists("email", payload.email)) {
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
@@ -68,12 +73,19 @@ const createStudent = async (
     // set student id
     userData.id = await generateStudentId(admissionSemester);
 
-    // upload image to cloudinary
-    const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
-    const imageUploadResponse = await sendImageToCloudinary(
-      imgName,
-      filePath as string,
-    );
+    let imageUploadResponse;
+    if (!filePath) {
+      payload.profileImage = "";
+    } else {
+      // upload image to cloudinary
+      const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
+      imageUploadResponse = await sendImageToCloudinary(
+        imgName,
+        filePath as string,
+      );
+    }
+
+    // console.log(filePath);
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // built-in static method
@@ -83,7 +95,7 @@ const createStudent = async (
 
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImage = imageUploadResponse?.secure_url; // set image url from cloudinary response
+    payload.profileImage = imageUploadResponse?.secure_url || ""; // set image url from cloudinary response
 
     // create a student (transaction-2)
     const newStudent = await Student.create([payload], { session });
@@ -107,10 +119,15 @@ const createStudent = async (
 
 // create a new faculty
 const createFaculty = async (
-  filePath: string,
   password: string,
   payload: TFaculty,
+  filePath?: string,
 ) => {
+  // check the admin already exists on the user collection
+  if (await User.findOne({ email: payload.email })) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
+  }
+
   // check if the faculty has already been created with provide email
   if (await Faculty.isFacultyExists("email", payload.email)) {
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
@@ -143,9 +160,17 @@ const createFaculty = async (
     // set faculty id
     userData.id = await generateFacultyId();
 
-    // upload image to cloudinary
-    const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
-    const imageUploadResponse = await sendImageToCloudinary(imgName, filePath);
+    let imageUploadResponse;
+    if (!filePath) {
+      payload.profileImage = "";
+    } else {
+      // upload image to cloudinary
+      const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
+      imageUploadResponse = await sendImageToCloudinary(
+        imgName,
+        filePath as string,
+      );
+    }
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // built-in static method
@@ -155,7 +180,7 @@ const createFaculty = async (
 
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImage = imageUploadResponse?.secure_url; // set image url from cloudinary response
+    payload.profileImage = imageUploadResponse?.secure_url || ""; // set image url from cloudinary response
 
     // create a faculty (transaction-2)
     const newFaculty = await Faculty.create([payload], { session });
@@ -178,11 +203,16 @@ const createFaculty = async (
 
 // create a new admin
 const createAdmin = async (
-  filePath: string,
   password: string,
   payload: TAdmin,
+  filePath?: string,
 ) => {
-  // check if the faculty has already been created with provide email
+  // check the admin already exists on the user collection
+  if (await User.findOne({ email: payload.email })) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
+  }
+
+  // check if the admin has already been created with provide email
   if (await Admin.isAdminExists("email", payload.email)) {
     throw new AppError(httpStatus.BAD_REQUEST, "Email already exists");
   }
@@ -198,17 +228,23 @@ const createAdmin = async (
 
   const session = await mongoose.startSession();
 
-  // set faculty id
-
   try {
     // start transaction
     session.startTransaction();
 
     userData.id = await generateAdminId();
 
-    // upload image to cloudinary
-    const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
-    const imageUploadResponse = await sendImageToCloudinary(imgName, filePath);
+    let imageUploadResponse;
+    if (!filePath) {
+      payload.profileImage = "";
+    } else {
+      // upload image to cloudinary
+      const imgName = `${userData?.id}-${payload?.name?.firstName.trim()}`;
+      imageUploadResponse = await sendImageToCloudinary(
+        imgName,
+        filePath as string,
+      );
+    }
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }); // built-in static method
@@ -218,7 +254,7 @@ const createAdmin = async (
 
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; // reference _id
-    payload.profileImage = imageUploadResponse?.secure_url; // set image url from cloudinary response
+    payload.profileImage = imageUploadResponse?.secure_url || ""; // set image url from cloudinary response
 
     // create a admin (transaction-2)
     const newAdmin = await Admin.create([payload], { session });

@@ -20,8 +20,10 @@ app.use(
       "http://192.168.0.116:5173",
       "https://phu-ui.noyonrahman.xyz",
       "https://phu.noyonrahman.xyz",
+      "https://phu-web.vercel.app",
     ],
     credentials: true,
+    methods: "*",
   }),
 );
 app.use(express.urlencoded({ extended: true }));

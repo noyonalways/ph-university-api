@@ -1,19 +1,18 @@
 import httpStatus from "http-status";
-import AppError from "../../errors/AppError";
 import { catchAsync, sendResponse } from "../../utils";
 import userService from "../user/user.service";
 
 const createStudent = catchAsync(async (req, res) => {
-  if (!req.file?.path) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Image file is required");
-  }
+  // if (!req.file?.path) {
+  //   throw new AppError(httpStatus.BAD_REQUEST, "Profile Image is required");
+  // }
 
   const { password, student } = req.body;
 
   const result = await userService.createStudent(
-    req.file?.path,
     password,
     student,
+    req.file?.path,
   );
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -24,15 +23,12 @@ const createStudent = catchAsync(async (req, res) => {
 });
 
 const createFaculty = catchAsync(async (req, res) => {
-  if (!req.file?.path) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Image file is required");
-  }
   const { password, faculty } = req.body;
 
   const result = await userService.createFaculty(
-    req.file?.path,
     password,
     faculty,
+    req.file?.path,
   );
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -43,12 +39,9 @@ const createFaculty = catchAsync(async (req, res) => {
 });
 
 const createAdmin = catchAsync(async (req, res) => {
-  if (!req.file?.path) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Image file is required");
-  }
   const { password, admin } = req.body;
 
-  const result = await userService.createAdmin(req.file?.path, password, admin);
+  const result = await userService.createAdmin(password, admin, req.file?.path);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

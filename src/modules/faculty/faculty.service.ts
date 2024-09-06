@@ -9,12 +9,14 @@ import Faculty from "./faculty.model";
 
 const getAll = (query: Record<string, unknown>) => {
   const facultyQuery = new QueryBuilder(
-    Faculty.find().populate({
-      path: "academicDepartment",
-      populate: {
-        path: "academicFaculty",
-      },
-    }),
+    Faculty.find()
+      .populate({
+        path: "academicDepartment",
+        populate: {
+          path: "academicFaculty",
+        },
+      })
+      .populate("user"),
     query,
   )
     .search(FacultySearchableFields)
@@ -31,12 +33,14 @@ const findByProperty = (key: string, value: string) => {
     if (!isValidObjectId(value)) {
       throw new AppError(httpStatus.BAD_REQUEST, "Invalid objectId");
     }
-    return Faculty.findById(value).populate({
-      path: "academicDepartment",
-      populate: {
-        path: "academicFaculty",
-      },
-    });
+    return Faculty.findById(value)
+      .populate({
+        path: "academicDepartment",
+        populate: {
+          path: "academicFaculty",
+        },
+      })
+      .populate("user");
   } else {
     return Faculty.findOne({ [key]: value }).populate({
       path: "academicDepartment",
