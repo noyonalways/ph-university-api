@@ -5,6 +5,7 @@ import academicSemesterRoutes from "../modules/academic-semester/academicSemeste
 import adminRoutes from "../modules/admin/admin.routes";
 import authRoutes from "../modules/auth/auth.routes";
 import courseRoutes from "../modules/course/course.routes";
+import enrollCourseRoutes from "../modules/enrolled-course/enrolledCourse.routes";
 import facultyRoutes from "../modules/faculty/faculty.routes";
 import offeredCourseRoutes from "../modules/offered-course/offeredCourse.routes";
 import semesterRegistrationRoutes from "../modules/semester-registration/semesterRegistration.routes";
@@ -57,6 +58,10 @@ const moduleRouts = [
   {
     path: "/auth",
     routes: authRoutes,
+  },
+  {
+    path: "/enrolled-courses",
+    routes: enrollCourseRoutes,
   },
 ];
 

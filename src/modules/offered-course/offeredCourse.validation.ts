@@ -34,6 +34,14 @@ export const createOfferedCourseValidationSchema = z.object({
         .refine((val) => mongoose.Types.ObjectId.isValid(val), {
           message: "invalid semester registration id",
         }),
+      academicSemester: z
+        .string({
+          required_error: "academic semester is required",
+          invalid_type_error: "academic semester must be string",
+        })
+        .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+          message: "invalid academic semester id",
+        }),
       academicFaculty: z
         .string({
           required_error: "academic faculty is required",

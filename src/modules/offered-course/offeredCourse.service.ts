@@ -45,7 +45,7 @@ const create = async (payload: TOfferedCourse) => {
       semesterRegistration.toString(),
     );
   // get academic semester from db by registered semester
-  const academicSemester = isRegisteredSemesterExists?.academicSemester._id;
+  const academicSemester = isRegisteredSemesterExists?.academicSemester?._id;
   if (!isRegisteredSemesterExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Registered Semester not found");
   }
