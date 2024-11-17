@@ -1,20 +1,13 @@
 import { Server } from "http";
-import mongoose from "mongoose";
 import app from "./app/app";
 import config from "./config";
+import connectToDB from "./db";
 
 let server: Server;
 
 async function main() {
   try {
-    await mongoose
-      .connect(config.database_url as string, {
-        serverSelectionTimeoutMS: 5000,
-      })
-      .then(() => {
-        // eslint-disable-next-line no-console
-        console.log("Connected to database".cyan);
-      });
+    await connectToDB();
 
     server = app.listen(config.port, () => {
       // eslint-disable-next-line no-console

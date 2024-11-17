@@ -10,7 +10,16 @@ router.get("/", (_req: Request, res: Response) => {
 });
 
 router.get("/health", (_req: Request, res: Response) => {
-  res.status(200).send("OK");
+  res.status(200).json({
+    message: "Server is up and running!",
+    status: "OK",
+    version: "1.0.0",
+    environment: process.env.NODE_ENV,
+    serverInfo: {
+      hostname: process.env.HOST || "localhost",
+      port: process.env.PORT || 3000,
+    },
+  });
 });
 
 // main routes
